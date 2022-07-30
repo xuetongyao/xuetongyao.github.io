@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="
+category: Java
+tag:
+
+JVM
+
+
+大白话带你认识JVM
+原文地址：https://juejin.im/post/5e1505d0f265da5d5d744050#heading-28
+前言
+如果在文中用词或者理解方面出..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    <!-- 代码渲染风格css -->
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/rainbow.min.css">
+    
+    <!-- 代码高亮插件 -->
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <!-- 代码复制插件 -->
+    <script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/clipboard.min.js"></script>
+    <!-- live2d插件 -->
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <!-- 数学公式 -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css"
+        integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js"
+        integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js"
+        integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous">
+        </script>
+    <script>
+        renderMathInElement(document.body, {
+            delimiters: [{
+                left: "$$",
+                right: "$$",
+                display: true
+            },
+            {
+                left: "$",
+                right: "$",
+                display: false
+            }
+            ]
+        });
+    </script>
+    
+    <title>JVM</title>
+
+    <!-- 大纲索引css调整 -->
+    
+    <style>
+        .markdownIt-TOC {
+            margin-left: 28%;
+            padding-left: 2px;
+            width: 80%;
+        }
+
+        .markdownIt-TOC li {
+            padding-left: 8%;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="landlord">
+        <div class="message" style="opacity:0"></div>
+        <canvas id="live2d" width="240" height="250" class="live2d"></canvas>
+    </div>
+    <div id="domainname" style="display:none">https://xuetongyao.github.io</div>
+    <div id="content">
+        <div>
+            <!----------- 移动端导航栏👇 ----------------->
+            <div id="bar">
+                <style>
+  .navmobile {
+    z-index: 15;
+    max-height: 40vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .navbar {
+      max-width: 100vw;
+    }
+  }
+
+  @media screen and (max-width:1200px) and (min-width: 768px) {
+    @media (min-width: 768px) {
+      .navbar-nav {
+        float: right;
+        margin: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width:768px) {
+    .mbapspan {
+      padding: 0;
+    }
+  }
+</style>
+<div class="pjaxloading"  onclick="pjaxloadingClose()">
+  <div class="loadingbackground"></div>
+  <div id="loading">
+    <div class="loading">
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-inverse navbar-fixed-top navmobile">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#barmenu"
+        aria-expanded="false" id="barbutton">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a data-pjax class="navbar-brand" style="color:white" href="https://xuetongyao.github.io">tongyao&#39;s blog&nbsp;&nbsp;|</a>
+      <span class="navbar-brand mbapspan"><i id="mbaplayer" class="fa fa-play-circle-o" aria-hidden="true"
+          style="font-size: 28px;top: 12px;position: absolute;" onclick="aplayerPlay();"></i></span>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="barmenu">
+      <ul class="nav navbar-nav">
+        
+        
+        <li>
+          <a data-pjax href="/" style="color:white">
+            首页
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/archives" style="color:white">
+            归档
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/tags" style="color:white">
+            标签
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/post/about" style="color:white">
+            关于
+          </a>
+        </li>
+        
+        
+        
+        
+          
+        <li><a data-pjax href="https://xuetongyao.github.io/friends" style="color:white">友链</a></li>
+
+        
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+  <!-- 引入jQuery核心js文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+  <script>
+    let btstate = false;
+    var bt = $("#barbutton");
+    var bm = $("#barmenu");
+    bt.click(function () {
+      dropdown();
+    })
+    function dropdown() {
+      console.log(btstate);
+      //下拉
+      if (btstate == false) {
+        bt.removeClass("collapsed");
+        bt.attr("aria-expanded", "true");
+        bm.attr("aria-expanded", "true")
+        bm.fadeIn(700);
+        btstate = true;
+      }
+      else {
+        bt.addClass("collapsed");
+        bt.attr("aria-expanded", "false");
+        bm.removeClass("in");
+        bm.hide();
+        bm.attr("aria-expanded", "false");
+        btstate = false;
+      }
+    }
+  </script> 
+            </div>
+            <!----------- 移动端导航栏👆 ----------------->
+
+            <!--------------- pc端菜单栏👇 ---------------->
+            <div class="side"><head>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/rainbow.min.css">
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/clipboard.min.js"></script>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- fancybox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+    <!--------- 数学公式👇---- -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css"
+        integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js"
+        integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js"
+        integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous">
+    </script>
+    <script>
+        renderMathInElement(document.body, {
+            delimiters: [{
+                    left: "$$",
+                    right: "$$",
+                    display: true
+                },
+                {
+                    left: "$",
+                    right: "$",
+                    display: false
+                }
+            ]
+        });
+    </script>
+    
+    <!--------- 数学公式👆----------------- -->
+    <!--------- daovocie功能👇 ------------------->
+    
+    <!--------- daovocie功能👆 ------------------->
+    <!-- -----------------twikoo评论系统引入👇 --------->
+    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js"></script>
+    <!-- -----------------twikoo评论系统引入👆 --------->
+    <!---------------- leancloud api 功能依赖引入👇 -------->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@3.13.0/dist/av-min.js"></script>
+    <!---------------- leancloud api 功能依赖引入👆 -------->
+    <!------------------ valine评论系统引入👇 ------------------>
+    <script src="https://xuetongyao.github.io/media/js/valine.min.js"></script>
+    <!------------------ valine评论系统引入👆 ------------------>
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <!---------------- 今日诗词api功能依赖👆 ----------------------->
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ispeak-bber/ispeak-bber.min.js" charset="utf-8"></script>
+    <!---------------- 哔哔功能依赖👆 ----------------------->
+
+
+</head>
+
+<style>
+    body {
+        overflow-x: hidden;
+        height: 100vh;
+        overflow-y: scroll;
+        cursor: url("https://xuetongyao.github.io/media/images/mouse_cursor.png"), auto
+    }
+</style>
+
+<body>
+    <!--=------ 页面加载动态画面👇 --------------->
+    <div class="pjaxloading" onclick="pjaxloadingClose()">
+        <div class="loadingbackground"></div>
+        <div id="loading-aname">
+            <div class="loading-aname">
+            </div>
+        </div>
+    </div>
+    <!--=------ 页面加载动态画面👆 --------------->
+
+    <!--------------- 左侧菜单栏👇 ------------------------>
+    
+    <div id=side>
+        <div class="r_m_div">
+            <a onclick="showAaplayer()"><i style="font-size: 20px;"><img
+                        src='https://xuetongyao.github.io/media/images/music.png' alt="音乐播放器" class="musicbtn"></i></a>
+        </div>
+        <div class="avatar-border">
+            <img src="https://xuetongyao.github.io/images/avatar.png?v=1659154940236" class="avatar">
+        </div>
+        <div class="sitename">tongyao&#39;s blog</div>
+        <span class="description" data-text='["距离之所以可怕，因为根本不知道对方是把你想念，还是把你忘记"]'>&nbsp;</span>
+        <div class="siteinfocontainer">
+            <span class="siteinfo">文章</span>
+            <span class="siteinfo">标签</span>
+        </div>
+        <div class="siteinfocontainer">
+            <span class="siteinfo" id="siteinfo-postsnum"></span>
+            <span class="siteinfo">8</span>
+        </div>
+        
+        <div class="search">
+            <!-- <input type="text" class="search-input" placeholder="标题搜索(●'◡'●)" /> -->
+            <input type="text" class="search-input" placeholder="标题搜索 ⚆_⚆ つ♡">
+            <div class="search-results"></div>
+        </div>
+        
+    <div class="share-button">
+        <span>find me here!!</span>
+        
+        <a href="https://github.com/xuetongyao" target="_blank"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/github.png" alt=""></i></a>
+        
+        
+        <a onclick="showqq()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/QQ.png" alt=""></i></a>
+        
+        
+        
+        
+        <a onclick="showWechat()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/wechat.png" alt=""></i></a>
+        
+        
+        
+        
+    </div>
+    <div id="qq" style="display:none">815146666</div>
+    <!------------ 加载菜单按钮👇 ------------------------->
+    <div class="menucontainer">
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="首页"></i>&nbsp;<span
+                    data-text="首页">首页</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/archives" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="归档"></i>&nbsp;<span
+                    data-text="归档">归档</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/tags" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="标签"></i>&nbsp;<span
+                    data-text="标签">标签</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/post/about" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="关于"></i>&nbsp;<span
+                    data-text="关于">关于</span>
+            </a>
+        </div>
+        
+        
+
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="https://xuetongyao.github.io/friends" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="友人帐"></i>&nbsp;<span data-text="友人帐">友人帐</span>
+            </a>
+        </div>
+        
+        <!--  -->
+    </div>
+    <!------------ 加载菜单按钮👆 ------------------------->
+    <hr>
+    <style>
+    .copyright {
+        font-size: 15px;
+        color: #d9d9d9;
+    }
+
+
+    @media screen and (min-width: 1200px) {
+        .foot {
+            width: 100%;
+            height: 130px;
+        }
+    }
+
+    @media screen and (max-width: 1200px) {
+        .foot {
+            display: none;
+        }
+    }
+</style>
+
+<body>
+    <div class="foot">
+        <div id="footinfo"> | Theme: <a
+                href="https://github.com/850552586/gridea-theme-fog">Fog</a>
+            <div>
+                
+            </div>
+            <div>
+                
+            </div>
+            <div class="copyright" style="color:white;text-align: center;">备案号: 沪ICP备2022004414号
+            </div>
+        </div>
+
+
+
+    </div>
+</body>
+
+    </div>
+
+    <img class="moon" src="https://xuetongyao.github.io/media/images/moon.png" onclick="moonlight()">
+    <script src="https://xuetongyao.github.io/media/js/wordshow.js"></script>
+    
+    <!--------------- 左侧菜单栏👆 ------------------------>
+
+    <!----------------- 顶部菜单栏👇 ------------------------>
+    
+    <!----------------- 顶部菜单栏👆 ------------------------>
+
+<!--核心功能加载-->
+<script src="https://xuetongyao.github.io/media/js/mainfunc.js"></script>
+
+<!------------- Fog1.0版本彩蛋👇 -------------->
+    <!-- <section id="terrestrial" class="popup">
+        <a href="#" class="back">&lt; back</a>
+    </section>
+
+    <div class="flycontainer">
+        <div class="flyword">御风飞行中...</div>
+    </div>
+
+    <script>
+        $("#fog_go").click(function(){fog_go()});
+        async function fog_go(){
+            $(".bars").hide()
+            $("#live2d").hide()
+            await sleep(3000);
+            $(".flycontainer").css("display","flex");
+            $(".popup").fadeOut(500)
+            await sleep(2000);
+            var sitename = "tongyao&#39;s blog";
+            getFogUser(sitename);
+        }
+
+        function fog_goregis(){
+            var sitename = "tongyao&#39;s blog";
+            var siteurl = "https://xuetongyao.github.io";
+            regisFogUser(sitename,siteurl);
+        }
+        fog_goregis();
+    </script> -->
+<!------------- Fog1.0版本彩蛋👆 -------------->
+<script>
+    function change_topmenu(){
+        tmcolor = "antiquewhite"
+        tsnamecolor = "antiquewhite"
+        $(".navbar-inverse .navbar-nav>li>a").css("color",tmcolor)
+        $(".navbar-inverse .navbar-brand").css("color",tsnamecolor)
+        $(".navbar-fixed-top").css("border-radius","0 0 10px 10px")
+    }
+</script>
+
+<!------ 根据自定义配置声明变量👇 --------------------->
+    
+    <script>
+        var postnumChoice = false
+    </script>
+    
+    
+    <script>
+        var shareChoice = true
+    </script>
+    
+    
+    <script>
+        var donateChoice = false
+    </script>
+    
+    
+    <script>
+        var searchChoice = true
+    </script>
+    
+    <script>let postsnum = 0;</script>
+    <div id="side-posttitle" style="display: none;">
+    
+    
+    OpenFegin 进行远程服务调用
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    HashMap
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Mapreduce
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    JVM
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Big Data
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    Hello Gridea
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    </div>
+    
+        <script>
+            var menupos = 'left';
+            $("#siteinfo-postsnum").html(postsnum);
+        </script>
+    
+    <script>
+        let commentsHide = false
+    </script>
+    <!------ 根据自定义配置声明变量👆 --------------------->
+
+
+    <!----------根据自定义配置设置图标信息👇---------->
+    <script>
+        var icondict = new Array();
+    </script>
+    
+        
+    
+    <!----------根据自定义配置设置图标信息👆---------->
+</body>
+
+<script src="https://xuetongyao.github.io/media/share/dist/Share.js"></script>
+<!-- 页面pjax测试 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js"></script>
+<!--确保jQuery已经在此之前加载-->
+<!-- <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script> -->
+<script src="https://xuetongyao.github.io/media/js/all-pjax.js"></script>
+<script>
+    //-------------------------------说说功能👇--------------------------------------
+    let talksall = [];
+    let talks = [];
+    let talkindex = 0;
+    get();
+
+    function get() {
+        var t = JSON.parse('[]');
+        talkindex = t.length - 1;
+        for (var i = 0; i <= t.length - 1; i++) {
+            var d = {};
+            d["time"] = t[i].time;
+            d["author"] = t[i].author;
+            d["text"] = t[i].text;
+            d["img"] = t[i].img;
+            talksall.push(d);
+        }
+    }
+
+    function add() {
+        for (var i = talkindex; i >= 0 && i > talkindex - 3; i--) {
+            talks.push(talksall[i]);
+        }
+        talkindex = (talkindex - 3) >= 0 ? (talkindex - 3) : -1;
+        if (talkindex < 0) $("#getmorebt").hide();
+        show();
+    }
+
+    function show() {
+        var talkT = document.getElementById("talkContainer");
+        talkT.innerHTML = "";
+        for (var i = 0; i < talks.length; i++) {
+            if (talks[i].img != '') {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <span data-fancybox="images" href="' + talks[i].img + '"><img src="' + talks[i].img + '" class="talkimg"></span> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            } else {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            }
+        }
+    }
+    //-------------------------------说说功能👆--------------------------------------
+</script>
+
+<!---->
+<script>
+    function replaceAvatar() {
+        twikoo_avatar = $(".tk-avatar-img");
+        for (var i = 0; i < twikoo_avatar.length; i++) {
+            var asrc = twikoo_avatar.eq(i).attr('src');
+            if (asrc.search('cn.gravatar.com') != -1) {
+                twikoo_avatar.eq(i).attr('src', 'https://xuetongyao.github.io/media/images/comavatar.png');
+            }
+        }
+    }
+
+    function showWechat() {
+        var wechat = 'XueTongyao_';
+        alert("博主微信号：" + wechat);
+        return false;
+    }
+</script>
+
+<script>
+    /**
+     * https://github.com/tangkaichuan/gridea-search
+     */
+    // 检查缓存是否最新
+    function checkCache() {
+        var caches_postsnum = localStorage.getItem("postsnum");
+        var pt = document.getElementById("side-posttitle").innerHTML;
+        pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "")
+        var ptlen = pt.length;
+        var ptlen_storage = localStorage.getItem("poststitlelen");
+        if (caches_postsnum != postsnum || ptlen != ptlen_storage) {
+            console.log("更新缓存");
+            return false
+        }
+        return true;
+    }
+
+    (function () {
+        var CACHES = checkCache()
+        if (!CACHES) {
+            var NOW = Date.now()
+            var API_CONTENT = '../api-content/index.html' + '?_=' + NOW
+            preload(API_CONTENT);
+            getContents(show_getContentresult);
+        }
+
+        function show_getContentresult(data) {
+            console.log("获取成功");
+            var postslen = data["posts"].length;
+            localStorage.setItem('postsnum', postslen);
+            var poststitlelen = 0;
+            var pt = document.getElementById("side-posttitle").innerHTML;
+            pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "");
+            localStorage.setItem('poststitlelen', pt.length);
+        }
+
+
+
+        // preload
+        function preload(url) {
+            var preloadLink = document.createElement('link')
+            preloadLink.href = url
+            preloadLink.rel = 'preload'
+            preloadLink.as = 'fetch'
+            preloadLink.crossOrigin = 'anonymous'
+            document.head.appendChild(preloadLink)
+        }
+
+        // 异步 GET 请求
+        function get(obj) {
+            var xhr = new XMLHttpRequest()
+            xhr.open('get', obj.url, true)
+            xhr.send(null)
+            xhr.onreadystatechange = function () {
+                // 异步请求：响应状态为4，数据加载完毕
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        obj.success(xhr.responseText)
+                    } else {
+                        obj.error(xhr.status)
+                    }
+                }
+            }
+        }
+
+        // 获取博客全文 api
+        function getContents(callback) {
+            if (CACHES) {
+                callback(CACHES.contents)
+            } else {
+                get({
+                    url: API_CONTENT,
+                    success: function (data) {
+                        callback(JSON.parse(data));
+                        localStorage.setItem('ContentsCache', data);
+                        getStorageContent();
+                    }
+                })
+            }
+        }
+    })()
+    //------------------------核心功能--pjax全局渲染👇-------------------
+    let talkinit = false;
+    $(document).pjax('a[data-pjax]', '#main', {
+        fragment: '#main',
+        timeout: 8000
+    }).on('pjax:complete', function () {
+        //代码块高亮渲染
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+        //文章热度
+        if(postnumChoice){
+            getHotnum();
+        }
+        //文章索引
+        toginit();
+        //清空搜索栏
+        if (searchChoice) {
+            searchInit();
+            searchInput.value = "";
+        }
+        var pl = window.location.pathname;
+        //说说更新
+        if (pl.search("talk") != -1 && !talkinit) {
+            add();
+            talkinit = true;
+        } else if (pl.search("talk") != -1) {
+            show();
+        }
+        if (pl.search("post") != -1) {
+            if (shareChoice)
+                shareInit();
+            if (donateChoice)
+                donateInit();
+            if ("default" == "default"&&!commentsHide) {
+                $("#comment").hide()
+                commentsHide = true
+            }
+            lazyload();
+            codeinit();
+            if ("default" == "twikoo") {
+                //twikoo头像更换
+                setTimeout(replaceAvatar, 3000);
+                setTimeout(replaceAvatar, 8000); //部分博主站点速度加载过慢，再添加一个延迟
+            }
+        }
+        if (btstate == true)
+            dropdown();
+    }).on('pjax:start', function () {
+        $(".pjaxloading").fadeIn(50);
+    }).on('pjax:end', function () {
+        $(".pjaxloading").fadeOut(50);
+    });
+    //------------------------核心功能--pjax全局渲染👆-------------------
+
+    //-------------------------------------------------搜索
+    // 获取搜索框、搜索按钮、清空搜索、结果输出对应的元素
+    if (searchChoice) {
+        var searchInput = document.querySelector('.search-input');
+        var searchResults = document.querySelector('.search-results');
+    }
+    // 申明保存文章的标题、链接、内容的数组变量
+    var searchValue = '',
+        arrItems = [],
+        arrLinks = [],
+        arrTitles = [],
+        arrContents = [],
+        arrResults = [],
+        indexItem = [],
+        itemLength = 0;
+    var tmpDiv = document.createElement('div');
+    tmpDiv.className = 'result-item';
+
+
+    function getStorageContent() {
+        var data = localStorage.getItem('ContentsCache');
+        data = JSON.parse(data);
+        posts = data["posts"];
+        for (var i = 0; i < posts.length; i++) {
+            arrLinks[i] = posts[i].link;
+            arrTitles[i] = posts[i].title;
+            arrContents[i] = posts[i].content;
+            itemLength++;
+        }
+    }
+    if (checkCache())
+        getStorageContent();
+    // 输入框内容变化后就开始匹配，可以不用点按钮
+    // 经测试，onkeydown, onchange 等方法效果不太理想，
+    // 存在输入延迟等问题，最后发现触发 input 事件最理想，
+    // 并且可以处理中文输入法拼写的变化
+    searchInput.oninput = function () {
+        setTimeout(searchConfirm, 0);
+    }
+    searchInput.onfocus = function () {
+        searchResults.style.display = 'block';
+    }
+
+    function searchConfirm() {
+        if (searchInput.value == '') {
+            searchResults.style.display = 'none';
+        } else if (searchInput.value.search(/^\s+$/) >= 0) {
+            // 检测输入值全是空白的情况
+            searchInit();
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '请输入有效内容...';
+            searchResults.appendChild(itemDiv);
+        } else {
+            // 合法输入值的情况
+            searchInit();
+            searchValue = searchInput.value;
+            // 在标题、内容中查找
+            searchMatching(arrTitles, arrContents, searchValue);
+        }
+    }
+
+    // 每次搜索完成后的初始化
+    function searchInit() {
+        arrResults = [];
+        indexItem = [];
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'block';
+    }
+
+    function searchMatching(arr1, arr2, input) {
+        // 忽略输入大小写
+        input = new RegExp(input, 'i');
+        var step = 10;
+        // 在所有文章标题、内容中匹配查询值
+        for (i = 0; i < itemLength; i++) {
+            var indexContent = arr2[i].search(input);
+            //标题匹配
+            if (arr1[i].search(input) != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+                if (indexContent != -1) {
+                    startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                    var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                    arrResults.push("....." + searchcontent + ".....");
+                } else
+                    arrResults.push("");
+            }
+            //内容匹配
+            else if (indexContent != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+
+                startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                arrResults.push("....." + searchcontent + ".....");
+            }
+        }
+
+        // 输出总共匹配到的数目
+        var totalDiv = tmpDiv.cloneNode(true);
+        totalDiv.innerHTML = '<b>总匹配：' + indexItem.length + ' 项<hr></b>';
+        searchResults.appendChild(totalDiv);
+
+        // 未匹配到内容的情况
+        if (indexItem.length == 0) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '未匹配到内容...';
+            searchResults.appendChild(itemDiv);
+        }
+
+        // 将所有匹配内容进行组合
+        for (i = 0; i < arrResults.length; i++) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerHTML = '<a data-pjax class="searchresults" href="' + arrLinks[indexItem[i]] + '"><b>[' +
+                arrTitles[indexItem[i]] +
+                ']</b><p>' + arrResults[i] + '</p></a><hr />';
+            searchResults.appendChild(itemDiv);
+        }
+    }
+</script>
+
+
+
+<!--------------------- 菜单栏图标加载功能👇 ----------------------->
+<script>
+var menulist = $(".menuicon");
+var menulength = menulist.length;
+for (var i = 0; i < menulength; i++) {
+    var altname = menulist.eq(i).attr("alt");
+    var iconurl = icondict[altname];
+    if (iconurl == undefined || iconurl == '')
+        continue;
+    if (iconurl == 'Home') {
+        menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Home.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Archive') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Archive.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Tag') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Tag.png");
+menulist.eq(i).show();
+} else if (iconurl == 'About') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/About.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Talk') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Talk.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Friends') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Friends.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Fly') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/wind.png");
+menulist.eq(i).show();
+} else {
+menulist.eq(i).attr("src", iconurl);
+menulist.eq(i).show();
+}
+}
+</script>
+<!--------------------- 菜单栏图标加载功能👆 ----------------------->
+
+<script>
+    //--------------------bber-onetalk加载👇--------------------------------
+    function bberonetalkLoad(){
+        bberjsonurl = '';
+        if ( $("#bber-talk").length > 0 ) {
+        jsonUrl = bberjsonurl
+        $.getJSON(jsonUrl+"?t="+Date.parse( new Date()),function(res){
+        var bberHtml = ''
+        $.each(res.data, function(i, item){
+            d = new Date(item.date)
+            date = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate() +' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+            dataTime = '<span class="datatime">'+date+'</span>'
+            bberHtml += '<li class="item item-'+(i+1)+'">'+dataTime+'： <a data-pjax href="https://xuetongyao.github.io/bber">'+item.content+'</a></li>'
+        });
+        $('#bber-talk').append('<span class="index-talk-icon"><svg viewBox="0 0 1024 1024" width="21" height="21"><path d="M184.32 891.667692c-12.603077 0-25.206154-2.363077-37.809231-7.876923-37.021538-14.966154-59.864615-49.624615-59.864615-89.009231v-275.692307c0-212.676923 173.292308-385.969231 385.969231-385.969231h78.76923c212.676923 0 385.969231 173.292308 385.969231 385.969231 0 169.353846-137.846154 307.2-307.2 307.2H289.083077l-37.021539 37.021538c-18.904615 18.116923-43.323077 28.356923-67.741538 28.356923zM472.615385 195.347692c-178.018462 0-322.953846 144.935385-322.953847 322.953846v275.692308c0 21.267692 15.753846 29.144615 20.48 31.507692 4.726154 2.363077 22.055385 7.876923 37.021539-7.08923l46.473846-46.473846c6.301538-6.301538 14.178462-9.452308 22.055385-9.452308h354.461538c134.695385 0 244.184615-109.489231 244.184616-244.184616 0-178.018462-144.935385-322.953846-322.953847-322.953846H472.615385z"></path><path d="M321.378462 512m-59.076924 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M518.301538 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M715.224615 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153846 0 59.076923 59.076923 0 1 0-118.153846 0Z"></path></svg></span><ul class="talk-list">'+bberHtml+'</ul>')
+        //Lately({ 'target': '#bber-talk .datatime' });
+        });
+        function Roll (){
+        var list_li = $('.talk-list li'),cur_li = list_li.first(),last_li = list_li.last();
+        last_li.after(cur_li);
+        };
+        setInterval(Roll,3000);
+    }
+    }
+  //--------------------bber-onetalk加载👆--------------------------------
+</script>
+
+<script>
+    var ClicksideState = 1
+    var cur_readingmode = false
+    function readingmode(){
+        if (!cur_readingmode){
+            if(menupos == 'left'){
+                if(ClicksideState==1)
+                menu_openclose1()
+            }
+            $("#tab1").fadeOut(50)
+            $("#bg").fadeOut(50)
+            $(".navbar").fadeOut(50)
+            $(".markdownIt-TOC li a").css("color","black")
+            cur_readingmode = true
+        }else{
+            if(menupos == 'left'){
+                if(ClicksideState==0)
+                    menu_openclose1()
+            }
+            $("#tab1").fadeIn(50)
+            $("#bg").fadeIn(50)
+            $(".navbar").fadeIn(50)
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            cur_readingmode = false  
+        }
+    }
+</script>
+
+
+<!----夜间模式👇-->
+<script>
+    var moonlightState = false
+    function moonlight(){
+        if(!moonlightState){
+            $("#bg").fadeOut(200)
+            $('body').css("background","rgba(0,0,0,0.8)")
+            $(".markdownIt-TOC li a").css("color","white")
+            $(".text p, .text ul").css("color","white")
+            $("#articlecontent").css("color","white")
+            $(".post-copyright").css("background","rgba(10,10,10,0.5)")
+            $('blockquote').css("background","rgba(10,10,10,0.6)")
+            $("#articlecontent").css("background","rgba(10,10,10,0.5)")
+            moonlightState = true
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/sun.png")
+        }else{
+            $("#bg").show()
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            $(".text p, .text ul").css("color","rgba(0, 0, 0, 0.7)")
+            $("#articlecontent").css("color","black")
+            $(".post-copyright").css("background","#f9f9f9")
+            $('blockquote').css("background","#eff8f0")
+            $("#articlecontent").css("background","white")
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/moon.png")
+            $('body').css("background","white")
+            moonlightState = false
+        }
+    }
+</script>
+<!----夜间模式👆--></div>
+            <!--------------- pc端菜单栏👆 ---------------->
+
+            <!-- ----------------左侧菜单栏html 👇-------------------------------------->
+            
+            <div>
+                <div id="tab1" class="tab">
+                    <div class="bars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="close"></div>
+                </div>
+                <div class="col-md-1 col-lg-3"></div>
+                <!-- main标签，pjax渲染时加载以下内容👇 -->
+                <div id="main" class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="padding:0;">
+                    <div class="readingmode" onclick="readingmode()">阅</div>
+                    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/font-awesome.css">
+
+<body>
+    <div class="allcontent" id="postdetail">
+        <div class="postshow postpadding" style="padding-bottom: 0;">
+            
+            <div class="postdetailimg">
+                <img src="data:image/jpeg;base64,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" class="postimage" style="cursor:auto">
+            </div>
+            <div class="postinfo-detail">
+                <div class="postdate"><i class="fa fa-calendar"></i>2022-07-27</div>
+                <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 34 min read</div>
+                <div class="posttag">
+                    
+                </div>
+            </div>
+            
+        <div id="articlecontent">
+            <div id="texttitle" style="text-align: center">
+                <h2 id="ptitle">JVM</h2>
+                <!-- id 将作为查询条件 -->
+                <div id="pl" style="display:none">https://xuetongyao.github.io/post/jvm/</div>
+                <div id="rootaddr" style="display:none">https://xuetongyao.github.io</div>
+                
+            </div>
+            <div class="text ">
+                <hr>
+<p>category: Java<br>
+tag:</p>
+<ul>
+<li>JVM</li>
+</ul>
+<hr>
+<h1 id="大白话带你认识jvm">大白话带你认识JVM</h1>
+<p>原文地址：https://juejin.im/post/5e1505d0f265da5d5d744050#heading-28</p>
+<h2 id="前言">前言</h2>
+<p>如果在文中用词或者理解方面出现问题，欢迎指出。此文旨在提及而不深究，但会尽量效率地把知识点都抛出来</p>
+<h2 id="一-jvm的基本介绍">一、JVM的基本介绍</h2>
+<p>JVM 是 Java Virtual Machine 的缩写，它是一个虚构出来的计算机，一种规范。通过在实际的计算机上仿真模拟各类计算机功能实现···</p>
+<p>好，其实抛开这么专业的句子不说，就知道JVM其实就类似于一台小电脑运行在windows或者linux这些操作系统环境下即可。它直接和操作系统进行交互，与硬件不直接交互，而操作系统可以帮我们完成和硬件进行交互的工作。</p>
+<figure data-type="image" tabindex="1"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/d947f91e44c44c6c80222b49c2dee859-new-image19a36451-d673-486e-9c8e-3c7d8ab66929.png" alt="" loading="lazy"></figure>
+<h3 id="11-java文件是如何被运行的">1.1 Java文件是如何被运行的</h3>
+<p>比如我们现在写了一个 HelloWorld.java 好了，那这个 HelloWorld.java 抛开所有东西不谈，那是不是就类似于一个文本文件，只是这个文本文件它写的都是英文，而且有一定的缩进而已。</p>
+<p>那我们的 <strong>JVM</strong> 是不认识文本文件的，所以它需要一个 <strong>编译</strong> ，让其成为一个它会读二进制文件的 <strong>HelloWorld.class</strong></p>
+<h4 id="1-类加载器">① 类加载器</h4>
+<p>如果 <strong>JVM</strong> 想要执行这个 <strong>.class</strong> 文件，我们需要将其装进一个 <strong>类加载器</strong> 中，它就像一个搬运工一样，会把所有的 <strong>.class</strong> 文件全部搬进JVM里面来。</p>
+<figure data-type="image" tabindex="2"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/81f1813f371c40ffa1c1f6d78bc49ed9-new-image28314ec8-066f-451e-8373-4517917d6bf7.png" alt="" loading="lazy"></figure>
+<h4 id="2-方法区">② 方法区</h4>
+<p><strong>方法区</strong> 是用于存放类似于元数据信息方面的数据的，比如类信息，常量，静态变量，编译后代码···等</p>
+<p>类加载器将 .class 文件搬过来就是先丢到这一块上</p>
+<h4 id="3-堆">③ 堆</h4>
+<p><strong>堆</strong> 主要放了一些存储的数据，比如对象实例，数组···等，它和方法区都同属于 <strong>线程共享区域</strong> 。也就是说它们都是 <strong>线程不安全</strong> 的</p>
+<h4 id="4-栈">④ 栈</h4>
+<p><strong>栈</strong> 这是我们的代码运行空间。我们编写的每一个方法都会放到 <strong>栈</strong> 里面运行。</p>
+<p>我们会听说过 本地方法栈 或者 本地方法接口 这两个名词，不过我们基本不会涉及这两块的内容，它俩底层是使用C来进行工作的，和Java没有太大的关系。</p>
+<h4 id="5-程序计数器">⑤ 程序计数器</h4>
+<p>主要就是完成一个加载工作，类似于一个指针一样的，指向下一行我们需要执行的代码。和栈一样，都是 <strong>线程独享</strong> 的，就是说每一个线程都会有自己对应的一块区域而不会存在并发和多线程的问题。</p>
+<figure data-type="image" tabindex="3"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/897863ee5ecb4d92b9119d065f468262-new-imagef7287f0b-c9f0-4f22-9eb4-6968bbaa5a82.png" alt="" loading="lazy"></figure>
+<h4 id="小总结">小总结</h4>
+<ol>
+<li>Java文件经过编译后变成 .class 字节码文件</li>
+<li>字节码文件通过类加载器被搬运到 JVM 虚拟机中</li>
+<li>虚拟机主要的5大块：方法区，堆都为线程共享区域，有线程安全问题，栈和本地方法栈和计数器都是独享区域，不存在线程安全问题，而 JVM 的调优主要就是围绕堆，栈两大块进行</li>
+</ol>
+<h3 id="12-简单的代码例子">1.2 简单的代码例子</h3>
+<p>一个简单的学生类</p>
+<figure data-type="image" tabindex="4"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/29046a721c2548e0a0680ec5baf4ea95-new-imageb0b42e5e-8e25-409e-b7b9-6586a39a0b8d.png" alt="" loading="lazy"></figure>
+<p>一个main方法</p>
+<figure data-type="image" tabindex="5"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/a3d34d33eab74f6f8743ecf62807445c-new-image08506a9e-5101-4f30-b0bc-3abbcb8f1894.png" alt="" loading="lazy"></figure>
+<p>执行main方法的步骤如下:</p>
+<ol>
+<li>编译好 App.java 后得到 App.class 后，执行 App.class，系统会启动一个 JVM 进程，从 classpath 路径中找到一个名为 App.class 的二进制文件，将 App 的类信息加载到运行时数据区的方法区内，这个过程叫做 App 类的加载</li>
+<li>JVM 找到 App 的主程序入口，执行main方法</li>
+<li>这个main中的第一条语句为 Student student = new Student(&quot;tellUrDream&quot;) ，就是让 JVM 创建一个Student对象，但是这个时候方法区中是没有 Student 类的信息的，所以 JVM 马上加载 Student 类，把 Student 类的信息放到方法区中</li>
+<li>加载完 Student 类后，JVM 在堆中为一个新的 Student 实例分配内存，然后调用构造函数初始化 Student 实例，这个 Student 实例持有 <strong>指向方法区中的 Student 类的类型信息</strong> 的引用</li>
+<li>执行student.sayName();时，JVM 根据 student 的引用找到 student 对象，然后根据 student 对象持有的引用定位到方法区中 student 类的类型信息的方法表，获得 sayName() 的字节码地址。</li>
+<li>执行sayName()</li>
+</ol>
+<p>其实也不用管太多，只需要知道对象实例初始化时会去方法区中找类信息，完成后再到栈那里去运行方法。找方法就在方法表中找。</p>
+<h2 id="二-类加载器的介绍">二、类加载器的介绍</h2>
+<p>之前也提到了它是负责加载.class文件的，它们在文件开头会有特定的文件标示，将class文件字节码内容加载到内存中，并将这些内容转换成方法区中的运行时数据结构，并且ClassLoader只负责class文件的加载，而是否能够运行则由 Execution Engine 来决定</p>
+<h3 id="21-类加载器的流程">2.1 类加载器的流程</h3>
+<p>从类被加载到虚拟机内存中开始，到释放内存总共有7个步骤：加载，验证，准备，解析，初始化，使用，卸载。其中<strong>验证，准备，解析三个部分统称为连接</strong></p>
+<h4 id="211-加载">2.1.1 加载</h4>
+<ol>
+<li>将class文件加载到内存</li>
+<li>将静态数据结构转化成方法区中运行时的数据结构</li>
+<li>在堆中生成一个代表这个类的 java.lang.Class对象作为数据访问的入口</li>
+</ol>
+<h4 id="212-链接">2.1.2 链接</h4>
+<ol>
+<li>验证：确保加载的类符合 JVM 规范和安全，保证被校验类的方法在运行时不会做出危害虚拟机的事件，其实就是一个安全检查</li>
+<li>准备：为static变量在方法区中分配内存空间，设置变量的初始值，例如 static int a = 3 （注意：准备阶段只设置类中的静态变量（方法区中），不包括实例变量（堆内存中），实例变量是对象初始化时赋值的）</li>
+<li>解析：虚拟机将常量池内的符号引用替换为直接引用的过程（符号引用比如我现在import java.util.ArrayList这就算符号引用，直接引用就是指针或者对象地址，注意引用对象一定是在内存进行）</li>
+</ol>
+<h4 id="213-初始化">2.1.3 初始化</h4>
+<p>初始化其实就是执行类构造器方法的<code>&lt;clinit&gt;()</code>的过程，而且要保证执行前父类的<code>&lt;clinit&gt;()</code>方法执行完毕。这个方法由编译器收集，顺序执行所有类变量（static修饰的成员变量）显式初始化和静态代码块中语句。此时准备阶段时的那个 <code>static int a</code> 由默认初始化的0变成了显式初始化的3。 由于执行顺序缘故，初始化阶段类变量如果在静态代码块中又进行了更改，会覆盖类变量的显式初始化，最终值会为静态代码块中的赋值。</p>
+<blockquote>
+<p>注意：字节码文件中初始化方法有两种，非静态资源初始化的<code>&lt;init&gt;</code>和静态资源初始化的<code>&lt;clinit&gt;</code>，类构造器方法<code>&lt;clinit&gt;()</code>不同于类的构造器，这些方法都是字节码文件中只能给JVM识别的特殊方法。</p>
+</blockquote>
+<h4 id="214-卸载">2.1.4 卸载</h4>
+<p>GC将无用对象从内存中卸载</p>
+<h3 id="22-类加载器的加载顺序">2.2 类加载器的加载顺序</h3>
+<p>加载一个Class类的顺序也是有优先级的，类加载器从最底层开始往上的顺序是这样的</p>
+<ol>
+<li>BootStrap ClassLoader：rt.jar</li>
+<li>Extension ClassLoader: 加载扩展的jar包</li>
+<li>App ClassLoader：指定的classpath下面的jar包</li>
+<li>Custom ClassLoader：自定义的类加载器</li>
+</ol>
+<h3 id="23-双亲委派机制">2.3 双亲委派机制</h3>
+<p>当一个类收到了加载请求时，它是不会先自己去尝试加载的，而是委派给父类去完成，比如我现在要 new 一个 Person，这个 Person 是我们自定义的类，如果我们要加载它，就会先委派 App ClassLoader ，只有当父类加载器都反馈自己无法完成这个请求（也就是父类加载器都没有找到加载所需的 Class）时，子类加载器才会自行尝试加载。</p>
+<p>这样做的好处是，加载位于 rt.jar 包中的类时不管是哪个加载器加载，最终都会委托到 BootStrap ClassLoader 进行加载，这样保证了使用不同的类加载器得到的都是同一个结果。</p>
+<p>其实这个也是一个隔离的作用，避免了我们的代码影响了 JDK 的代码，比如我现在自己定义一个 <code>java.lang.String</code> ：</p>
+<pre><code class="language-java">package java.lang;
+public class String {
+    public static void main(String[] args) {
+        System.out.println();
+    }
+}
+</code></pre>
+<p>尝试运行当前类的 <code>main</code> 函数的时候，我们的代码肯定会报错。这是因为在加载的时候其实是找到了 rt.jar 中的<code>java.lang.String</code>，然而发现这个里面并没有 <code>main</code> 方法。</p>
+<h2 id="三-运行时数据区">三、运行时数据区</h2>
+<h3 id="31-本地方法栈和程序计数器">3.1 本地方法栈和程序计数器</h3>
+<p>比如说我们现在点开Thread类的源码，会看到它的start0方法带有一个native关键字修饰，而且不存在方法体，这种用native修饰的方法就是本地方法，这是使用C来实现的，然后一般这些方法都会放到一个叫做本地方法栈的区域。</p>
+<p>程序计数器其实就是一个指针，它指向了我们程序中下一句需要执行的指令，它也是内存区域中唯一一个不会出现OutOfMemoryError的区域，而且占用内存空间小到基本可以忽略不计。这个内存仅代表当前线程所执行的字节码的行号指示器，字节码解析器通过改变这个计数器的值选取下一条需要执行的字节码指令。</p>
+<p>如果执行的是native方法，那这个指针就不工作了。</p>
+<h3 id="32-方法区">3.2 方法区</h3>
+<p>方法区主要的作用是存放类的元数据信息，常量和静态变量···等。当它存储的信息过大时，会在无法满足内存分配时报错。</p>
+<h3 id="33-虚拟机栈和虚拟机堆">3.3 虚拟机栈和虚拟机堆</h3>
+<p>一句话便是：栈管运行，堆管存储。则虚拟机栈负责运行代码，而虚拟机堆负责存储数据。</p>
+<h4 id="331-虚拟机栈的概念">3.3.1 虚拟机栈的概念</h4>
+<p>它是Java方法执行的内存模型。里面会对局部变量，动态链表，方法出口，栈的操作（入栈和出栈）进行存储，且线程独享。同时如果我们听到局部变量表，那也是在说虚拟机栈</p>
+<pre><code class="language-java">public class Person{
+    int a = 1;
+    
+    public void doSomething(){
+        int b = 2;
+    }
+}
+</code></pre>
+<h4 id="332-虚拟机栈存在的异常">3.3.2 虚拟机栈存在的异常</h4>
+<p>如果线程请求的栈的深度大于虚拟机栈的最大深度，就会报 <strong>StackOverflowError</strong> （这种错误经常出现在递归中）。Java虚拟机也可以动态扩展，但随着扩展会不断地申请内存，当无法申请足够内存时就会报错 <strong>OutOfMemoryError</strong>。</p>
+<h4 id="333-虚拟机栈的生命周期">3.3.3 虚拟机栈的生命周期</h4>
+<p>对于栈来说，不存在垃圾回收。只要程序运行结束，栈的空间自然就会释放了。栈的生命周期和所处的线程是一致的。</p>
+<p>这里补充一句：8种基本类型的变量+对象的引用变量+实例方法都是在栈里面分配内存。</p>
+<h4 id="334-虚拟机栈的执行">3.3.4 虚拟机栈的执行</h4>
+<p>我们经常说的栈帧数据，说白了在JVM中叫栈帧，放到Java中其实就是方法，它也是存放在栈中的。</p>
+<p>栈中的数据都是以栈帧的格式存在，它是一个关于方法和运行期数据的数据集。比如我们执行一个方法a，就会对应产生一个栈帧A1，然后A1会被压入栈中。同理方法b会有一个B1，方法c会有一个C1，等到这个线程执行完毕后，栈会先弹出C1，后B1,A1。它是一个先进后出，后进先出原则。</p>
+<h4 id="335-局部变量的复用">3.3.5 局部变量的复用</h4>
+<p>局部变量表用于存放方法参数和方法内部所定义的局部变量。它的容量是以Slot为最小单位，一个slot可以存放32位以内的数据类型。</p>
+<p>虚拟机通过索引定位的方式使用局部变量表，范围为[0,局部变量表的slot的数量]。方法中的参数就会按一定顺序排列在这个局部变量表中，至于怎么排的我们可以先不关心。而为了节省栈帧空间，这些slot是可以复用的，当方法执行位置超过了某个变量，那么这个变量的slot可以被其它变量复用。当然如果需要复用，那我们的垃圾回收自然就不会去动这些内存。</p>
+<h4 id="336-虚拟机堆的概念">3.3.6 虚拟机堆的概念</h4>
+<p>JVM内存会划分为堆内存和非堆内存，堆内存中也会划分为<strong>年轻代</strong>和<strong>老年代</strong>，而非堆内存则为<strong>永久代</strong>。年轻代又会分为<strong>Eden</strong>和<strong>Survivor</strong>区。Survivor也会分为<strong>FromPlace</strong>和<strong>ToPlace</strong>，toPlace的survivor区域是空的。Eden，FromPlace和ToPlace的默认占比为 <strong>8:1:1</strong>。当然这个东西其实也可以通过一个 -XX:+UsePSAdaptiveSurvivorSizePolicy 参数来根据生成对象的速率动态调整</p>
+<p>堆内存中存放的是对象，垃圾收集就是收集这些对象然后交给GC算法进行回收。非堆内存其实我们已经说过了，就是方法区。在1.8中已经移除永久代，替代品是一个元空间(MetaSpace)，最大区别是metaSpace是不存在于JVM中的，它使用的是本地内存。并有两个参数</p>
+<pre><code>MetaspaceSize：初始化元空间大小，控制发生GC
+MaxMetaspaceSize：限制元空间大小上限，防止占用过多物理内存。
+</code></pre>
+<p>移除的原因可以大致了解一下：融合HotSpot JVM和JRockit VM而做出的改变，因为JRockit是没有永久代的，不过这也间接性地解决了永久代的OOM问题。</p>
+<h4 id="337-eden年轻代的介绍">3.3.7 Eden年轻代的介绍</h4>
+<p>当我们new一个对象后，会先放到Eden划分出来的一块作为存储空间的内存，但是我们知道对堆内存是线程共享的，所以有可能会出现两个对象共用一个内存的情况。这里JVM的处理是每个线程都会预先申请好一块连续的内存空间并规定了对象存放的位置，而如果空间不足会再申请多块内存空间。这个操作我们会称作TLAB，有兴趣可以了解一下。</p>
+<p>当Eden空间满了之后，会触发一个叫做Minor GC（就是一个发生在年轻代的GC）的操作，存活下来的对象移动到Survivor0区。Survivor0区满后触发 Minor GC，就会将存活对象移动到Survivor1区，此时还会把from和to两个指针交换，这样保证了一段时间内总有一个survivor区为空且to所指向的survivor区为空。经过多次的 Minor GC后仍然存活的对象（<strong>这里的存活判断是15次，对应到虚拟机参数为 -XX:MaxTenuringThreshold 。为什么是15，因为HotSpot会在对象投中的标记字段里记录年龄，分配到的空间仅有4位，所以最多只能记录到15</strong>）会移动到老年代。老年代是存储长期存活的对象的，占满时就会触发我们最常听说的Full GC，期间会停止所有线程等待GC的完成。所以对于响应要求高的应用应该尽量去减少发生Full GC从而避免响应超时的问题。</p>
+<p>而且当老年区执行了full gc之后仍然无法进行对象保存的操作，就会产生OOM，这时候就是虚拟机中的堆内存不足，原因可能会是堆内存设置的大小过小，这个可以通过参数-Xms、-Xmx来调整。也可能是代码中创建的对象大且多，而且它们一直在被引用从而长时间垃圾收集无法收集它们。</p>
+<figure data-type="image" tabindex="6"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/c02ecba3c33f43429a765987b928e423-new-image93b46f3d-33f9-46f9-a825-ec7129b004f6.png" alt="" loading="lazy"></figure>
+<p>补充说明：关于-XX:TargetSurvivorRatio参数的问题。其实也不一定是要满足-XX:MaxTenuringThreshold才移动到老年代。可以举个例子：如对象年龄5的占30%，年龄6的占36%，年龄7的占34%，加入某个年龄段（如例子中的年龄6）后，总占用超过Survivor空间*TargetSurvivorRatio的时候，从该年龄段开始及大于的年龄对象就要进入老年代（即例子中的年龄6对象，就是年龄6和年龄7晋升到老年代），这时候无需等到MaxTenuringThreshold中要求的15</p>
+<h4 id="338-如何判断一个对象需要被干掉">3.3.8 如何判断一个对象需要被干掉</h4>
+<figure data-type="image" tabindex="7"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/1c1d85b5fb8b47239af2a5c0436eb2d7-new-image0cd10827-2f96-433c-9b16-93d4fe491d88.png" alt="" loading="lazy"></figure>
+<p>图中程序计数器、虚拟机栈、本地方法栈，3个区域随着线程的生存而生存的。内存分配和回收都是确定的。随着线程的结束内存自然就被回收了，因此不需要考虑垃圾回收的问题。而Java堆和方法区则不一样，各线程共享，内存的分配和回收都是动态的。因此垃圾收集器所关注的都是堆和方法这部分内存。</p>
+<p>在进行回收前就要判断哪些对象还存活，哪些已经死去。下面介绍两个基础的计算方法</p>
+<p>1.引用计数器计算：给对象添加一个引用计数器，每次引用这个对象时计数器加一，引用失效时减一，计数器等于0时就是不会再次使用的。不过这个方法有一种情况就是出现对象的循环引用时GC没法回收。</p>
+<p>2.可达性分析计算：这是一种类似于二叉树的实现，将一系列的GC ROOTS作为起始的存活对象集，从这个节点往下搜索，搜索所走过的路径成为引用链，把能被该集合引用到的对象加入到集合中。搜索当一个对象到GC Roots没有使用任何引用链时，则说明该对象是不可用的。主流的商用程序语言，例如Java，C#等都是靠这招去判定对象是否存活的。</p>
+<p>（了解一下即可）在Java语言汇总能作为GC Roots的对象分为以下几种：</p>
+<ol>
+<li>虚拟机栈（栈帧中的本地方法表）中引用的对象（局部变量）</li>
+<li>方法区中静态变量所引用的对象（静态变量）</li>
+<li>方法区中常量引用的对象</li>
+<li>本地方法栈（即native修饰的方法）中JNI引用的对象（JNI是Java虚拟机调用对应的C函数的方式，通过JNI函数也可以创建新的Java对象。且JNI对于对象的局部引用或者全局引用都会把它们指向的对象都标记为不可回收）</li>
+<li>已启动的且未终止的Java线程</li>
+</ol>
+<p>这种方法的优点是能够解决循环引用的问题，可它的实现需要耗费大量资源和时间，也需要GC（它的分析过程引用关系不能发生变化，所以需要停止所有进程）</p>
+<h4 id="339-如何宣告一个对象的真正死亡">3.3.9 如何宣告一个对象的真正死亡</h4>
+<p>首先必须要提到的是一个名叫 <strong>finalize()</strong> 的方法</p>
+<p>finalize()是Object类的一个方法、一个对象的finalize()方法只会被系统自动调用一次，经过finalize()方法逃脱死亡的对象，第二次不会再调用。</p>
+<p>补充一句：并不提倡在程序中调用finalize()来进行自救。建议忘掉Java程序中该方法的存在。因为它执行的时间不确定，甚至是否被执行也不确定（Java程序的不正常退出），而且运行代价高昂，无法保证各个对象的调用顺序（甚至有不同线程中调用）。在Java9中已经被标记为 <strong>deprecated</strong> ，且 <code>java.lang.ref.Cleaner</code>（也就是强、软、弱、幻象引用的那一套）中已经逐步替换掉它，会比 <code>finalize</code> 来的更加的轻量及可靠。<br>
+　　<br>
+<img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/c807dab33f8b42329c1910d609e7ed21-new-image565aeab2-6d3e-4c2c-80f6-7a7b0f629fda.png" alt="" loading="lazy"></p>
+<p>判断一个对象的死亡至少需要两次标记</p>
+<ol>
+<li>如果对象进行可达性分析之后没发现与GC Roots相连的引用链，那它将会第一次标记并且进行一次筛选。判断的条件是决定这个对象是否有必要执行finalize()方法。如果对象有必要执行finalize()方法，则被放入F-Queue队列中。</li>
+<li>GC对F-Queue队列中的对象进行二次标记。如果对象在finalize()方法中重新与引用链上的任何一个对象建立了关联，那么二次标记时则会将它移出“即将回收”集合。如果此时对象还没成功逃脱，那么只能被回收了。</li>
+</ol>
+<p>如果确定对象已经死亡，我们又该如何回收这些垃圾呢</p>
+<h3 id="34-垃圾回收算法">3.4 垃圾回收算法</h3>
+<p>不会非常详细的展开，常用的有标记清除，复制，标记整理和分代收集算法</p>
+<h4 id="341-标记清除算法">3.4.1 标记清除算法</h4>
+<p>标记清除算法就是分为“标记”和“清除”两个阶段。标记出所有需要回收的对象，标记结束后统一回收。这个套路很简单，也存在不足，后续的算法都是根据这个基础来加以改进的。</p>
+<p>其实它就是把已死亡的对象标记为空闲内存，然后记录在一个空闲列表中，当我们需要new一个对象时，内存管理模块会从空闲列表中寻找空闲的内存来分给新的对象。</p>
+<p>不足的方面就是标记和清除的效率比较低下。且这种做法会让内存中的碎片非常多。这个导致了如果我们需要使用到较大的内存块时，无法分配到足够的连续内存。比如下图</p>
+<figure data-type="image" tabindex="8"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/01605d96d85f4daab9bfa5e7000f0d31-new-image78e03b85-fbef-4df9-b41e-2b63d78d119f.png" alt="" loading="lazy"></figure>
+<p>此时可使用的内存块都是零零散散的，导致了刚刚提到的大内存对象问题</p>
+<h4 id="342-复制算法">3.4.2 复制算法</h4>
+<p>为了解决效率问题，复制算法就出现了。它将可用内存按容量划分成两等分，每次只使用其中的一块。和survivor一样也是用from和to两个指针这样的玩法。fromPlace存满了，就把存活的对象copy到另一块toPlace上，然后交换指针的内容。这样就解决了碎片的问题。</p>
+<p>这个算法的代价就是把内存缩水了，这样堆内存的使用效率就会变得十分低下了</p>
+<figure data-type="image" tabindex="9"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/fc349fbb9b204495a5321febe27818d4-new-image45920a9a-552c-4656-94d6-e3ca45ff9b76.png" alt="" loading="lazy"></figure>
+<p>不过它们分配的时候也不是按照1:1这样进行分配的，就类似于Eden和Survivor也不是等价分配是一个道理。</p>
+<h4 id="343-标记整理算法">3.4.3 标记整理算法</h4>
+<p>复制算法在对象存活率高的时候会有一定的效率问题，标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉边界以外的内存</p>
+<figure data-type="image" tabindex="10"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/2599e9f722074d34a3f7fd9f0076f121-new-imagec76192ec-b63a-43e3-a6d6-cf01f749953f.png" alt="" loading="lazy"></figure>
+<h4 id="344-分代收集算法">3.4.4 分代收集算法</h4>
+<p>这种算法并没有什么新的思想，只是根据对象存活周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。而老年代中因为对象存活率高、没有额外空间对它进行分配担保，就必须使用“标记-清理”或者“标记-整理”算法来进行回收。</p>
+<p>说白了就是八仙过海各显神通，具体问题具体分析了而已。</p>
+<h3 id="35-了解各种各样的垃圾回收器">3.5 （了解）各种各样的垃圾回收器</h3>
+<p>HotSpot VM中的垃圾回收器，以及适用场景</p>
+<figure data-type="image" tabindex="11"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/11e9dcd0f1ee4f25836e6f1c47104c51-new-image69e1c56a-1d40-493a-9901-6efc647a01f3.png" alt="" loading="lazy"></figure>
+<p>到jdk8为止，默认的垃圾收集器是Parallel Scavenge 和 Parallel Old</p>
+<p>从jdk9开始，G1收集器成为默认的垃圾收集器<br>
+目前来看，G1回收器停顿时间最短而且没有明显缺点，非常适合Web应用。在jdk8中测试Web应用，堆内存6G，新生代4.5G的情况下，Parallel Scavenge 回收新生代停顿长达1.5秒。G1回收器回收同样大小的新生代只停顿0.2秒。</p>
+<h3 id="36-了解jvm的常用参数">3.6 （了解）JVM的常用参数</h3>
+<p>JVM的参数非常之多，这里只列举比较重要的几个，通过各种各样的搜索引擎也可以得知这些信息。</p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>含义</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-Xms</td>
+<td>初始堆大小</td>
+<td>物理内存的1/64(&lt;1GB)</td>
+<td>默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制.</td>
+</tr>
+<tr>
+<td>-Xmx</td>
+<td>最大堆大小</td>
+<td>物理内存的1/4(&lt;1GB)</td>
+<td>默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制</td>
+</tr>
+<tr>
+<td>-Xmn</td>
+<td>年轻代大小(1.4or later)</td>
+<td></td>
+<td>注意：此处的大小是（eden+ 2 survivor space).与jmap -heap中显示的New gen是不同的。整个堆大小=年轻代大小 + 老年代大小 + 持久代（永久代）大小.增大年轻代后,将会减小年老代大小.此值对系统性能影响较大,Sun官方推荐配置为整个堆的3/8</td>
+</tr>
+<tr>
+<td>-XX:NewSize</td>
+<td>设置年轻代大小(for 1.3/1.4)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>-XX:MaxNewSize</td>
+<td>年轻代最大值(for 1.3/1.4)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>-XX:PermSize</td>
+<td>设置持久代(perm gen)初始值</td>
+<td>物理内存的1/64</td>
+<td></td>
+</tr>
+<tr>
+<td>-XX:MaxPermSize</td>
+<td>设置持久代最大值</td>
+<td>物理内存的1/4</td>
+<td></td>
+</tr>
+<tr>
+<td>-Xss</td>
+<td>每个线程的堆栈大小</td>
+<td></td>
+<td>JDK5.0以后每个线程堆栈大小为1M,以前每个线程堆栈大小为256K.根据应用的线程所需内存大小进行 调整.在相同物理内存下,减小这个值能生成更多的线程.但是操作系统对一个进程内的线程数还是有限制的,不能无限生成,经验值在3000~5000左右一般小的应用， 如果栈不是很深， 应该是128k够用的 大的应用建议使用256k。这个选项对性能影响比较大，需要严格的测试。（校长）和threadstacksize选项解释很类似,官方文档似乎没有解释,在论坛中有这样一句话:-Xss is translated in a VM flag named ThreadStackSize”一般设置这个值就可以了</td>
+</tr>
+<tr>
+<td>-XX:NewRatio</td>
+<td>年轻代(包括Eden和两个Survivor区)与年老代的比值(除去持久代)</td>
+<td></td>
+<td>-XX:NewRatio=4表示年轻代与年老代所占比值为1:4,年轻代占整个堆栈的1/5Xms=Xmx并且设置了Xmn的情况下，该参数不需要进行设置。</td>
+</tr>
+<tr>
+<td>-XX:SurvivorRatio</td>
+<td>Eden区与Survivor区的大小比值</td>
+<td></td>
+<td>设置为8,则两个Survivor区与一个Eden区的比值为2:8,一个Survivor区占整个年轻代的1/10</td>
+</tr>
+<tr>
+<td>-XX:+DisableExplicitGC</td>
+<td>关闭System.gc()</td>
+<td></td>
+<td>这个参数需要严格的测试</td>
+</tr>
+<tr>
+<td>-XX:PretenureSizeThreshold</td>
+<td>对象超过多大是直接在旧生代分配</td>
+<td>0</td>
+<td>单位字节 新生代采用Parallel ScavengeGC时无效另一种直接在旧生代分配的情况是大的数组对象,且数组中无外部引用对象.</td>
+</tr>
+<tr>
+<td>-XX:ParallelGCThreads</td>
+<td>并行收集器的线程数</td>
+<td></td>
+<td>此值最好配置与处理器数目相等 同样适用于CMS</td>
+</tr>
+<tr>
+<td>-XX:MaxGCPauseMillis</td>
+<td>每次年轻代垃圾回收的最长时间(最大暂停时间)</td>
+<td></td>
+<td>如果无法满足此时间,JVM会自动调整年轻代大小,以满足此值.</td>
+</tr>
+</tbody>
+</table>
+<p>其实还有一些打印及CMS方面的参数，这里就不以一一列举了</p>
+<h2 id="四-关于jvm调优的一些方面">四、关于JVM调优的一些方面</h2>
+<p>根据刚刚涉及的jvm的知识点，我们可以尝试对JVM进行调优，主要就是堆内存那块</p>
+<p>所有线程共享数据区大小=新生代大小 + 年老代大小 + 持久代大小。持久代一般固定大小为64m。所以java堆中增大年轻代后，将会减小年老代大小（因为老年代的清理是使用fullgc，所以老年代过小的话反而是会增多fullgc的）。此值对系统性能影响较大，Sun官方推荐配置为java堆的3/8。</p>
+<h3 id="41-调整最大堆内存和最小堆内存">4.1 调整最大堆内存和最小堆内存</h3>
+<p>-Xmx –Xms：指定java堆最大值（默认值是物理内存的1/4(&lt;1GB)）和初始java堆最小值（默认值是物理内存的1/64(&lt;1GB))</p>
+<p>默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制.，默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制。简单点来说，你不停地往堆内存里面丢数据，等它剩余大小小于40%了，JVM就会动态申请内存空间不过会小于-Xmx，如果剩余大小大于70%，又会动态缩小不过不会小于–Xms。就这么简单</p>
+<p>开发过程中，通常会将 -Xms 与 -Xmx两个参数配置成相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小而浪费资源。</p>
+<p>我们执行下面的代码</p>
+<pre><code class="language-java">System.out.println(&quot;Xmx=&quot; + Runtime.getRuntime().maxMemory() / 1024.0 / 1024 + &quot;M&quot;);    //系统的最大空间
+System.out.println(&quot;free mem=&quot; + Runtime.getRuntime().freeMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的空闲空间
+System.out.println(&quot;total mem=&quot; + Runtime.getRuntime().totalMemory() / 1024.0 / 1024 + &quot;M&quot;);  //当前可用的总空间
+</code></pre>
+<p>注意：此处设置的是Java堆大小，也就是新生代大小 + 老年代大小</p>
+<figure data-type="image" tabindex="12"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/5e7b352c16d74c789c665af46d3a2509-new-imagedd645dae-307d-4572-b6e2-b5a9925a46cd.png" alt="" loading="lazy"></figure>
+<p>设置一个VM options的参数</p>
+<pre><code>-Xmx20m -Xms5m -XX:+PrintGCDetails
+</code></pre>
+<figure data-type="image" tabindex="13"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/fe99e355f4754fa4be7427cb65261f3d-new-imagebb5cf485-99f8-43eb-8809-2a89e6a1768e.png" alt="" loading="lazy"></figure>
+<p>再次启动main方法</p>
+<figure data-type="image" tabindex="14"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/300539f6560043dd8a3fe085d28420e6-new-image3c581a2e-196f-4b01-90f1-c27731b4610b.png" alt="" loading="lazy"></figure>
+<p>这里GC弹出了一个Allocation Failure分配失败，这个事情发生在PSYoungGen，也就是年轻代中</p>
+<p>这时候申请到的内存为18M，空闲内存为4.214195251464844M</p>
+<p>我们此时创建一个字节数组看看，执行下面的代码</p>
+<pre><code class="language-java">byte[] b = new byte[1 * 1024 * 1024];
+System.out.println(&quot;分配了1M空间给数组&quot;);
+System.out.println(&quot;Xmx=&quot; + Runtime.getRuntime().maxMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的最大空间
+System.out.println(&quot;free mem=&quot; + Runtime.getRuntime().freeMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的空闲空间
+System.out.println(&quot;total mem=&quot; + Runtime.getRuntime().totalMemory() / 1024.0 / 1024 + &quot;M&quot;);
+</code></pre>
+<figure data-type="image" tabindex="15"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/bdd717d0a3394be7a733760052773374-new-image371b5d59-0020-4091-9874-603c0ab0073d.png" alt="" loading="lazy"></figure>
+<p>此时free memory就又缩水了，不过total memory是没有变化的。Java会尽可能将total mem的值维持在最小堆内存大小</p>
+<pre><code class="language-java">byte[] b = new byte[10 * 1024 * 1024];
+System.out.println(&quot;分配了10M空间给数组&quot;);
+System.out.println(&quot;Xmx=&quot; + Runtime.getRuntime().maxMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的最大空间
+System.out.println(&quot;free mem=&quot; + Runtime.getRuntime().freeMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的空闲空间
+System.out.println(&quot;total mem=&quot; + Runtime.getRuntime().totalMemory() / 1024.0 / 1024 + &quot;M&quot;);  //当前可用的总空间
+</code></pre>
+<figure data-type="image" tabindex="16"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/0fd7550ae2144adca8ed2ede12d5fb96-new-image0c31ff20-289d-4088-8c67-a846d0c5d1e0.png" alt="" loading="lazy"></figure>
+<p>这时候我们创建了一个10M的字节数据，这时候最小堆内存是顶不住的。我们会发现现在的total memory已经变成了15M，这就是已经申请了一次内存的结果。</p>
+<p>此时我们再跑一下这个代码</p>
+<pre><code class="language-java">System.gc();
+System.out.println(&quot;Xmx=&quot; + Runtime.getRuntime().maxMemory() / 1024.0 / 1024 + &quot;M&quot;);    //系统的最大空间
+System.out.println(&quot;free mem=&quot; + Runtime.getRuntime().freeMemory() / 1024.0 / 1024 + &quot;M&quot;);  //系统的空闲空间
+System.out.println(&quot;total mem=&quot; + Runtime.getRuntime().totalMemory() / 1024.0 / 1024 + &quot;M&quot;);  //当前可用的总空间
+</code></pre>
+<figure data-type="image" tabindex="17"><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/4cc44b5d5d1c40c48640ece6a296b1ac-new-image4b57baf6-085b-4150-9c60-ac51b0f815d7.png" alt="" loading="lazy"></figure>
+<p>此时我们手动执行了一次fullgc，此时total memory的内存空间又变回5.5M了，此时又是把申请的内存释放掉的结果。</p>
+<h3 id="42-调整新生代和老年代的比值">4.2 调整新生代和老年代的比值</h3>
+<p>-XX:NewRatio --- 新生代（eden+2*Survivor）和老年代（不包含永久区）的比值</p>
+<p>例如：-XX:NewRatio=4，表示新生代:老年代=1:4，即新生代占整个堆的1/5。在Xms=Xmx并且设置了Xmn的情况下，该参数不需要进行设置。</p>
+<h3 id="43-调整survivor区和eden区的比值">4.3 调整Survivor区和Eden区的比值</h3>
+<p>-XX:SurvivorRatio（幸存代）--- 设置两个Survivor区和eden的比值</p>
+<p>例如：8，表示两个Survivor:eden=2:8，即一个Survivor占年轻代的1/10</p>
+<h3 id="44-设置年轻代和老年代的大小">4.4 设置年轻代和老年代的大小</h3>
+<p>-XX:NewSize --- 设置年轻代大小</p>
+<p>-XX:MaxNewSize --- 设置年轻代最大值</p>
+<p>可以通过设置不同参数来测试不同的情况，反正最优解当然就是官方的Eden和Survivor的占比为8:1:1，然后在刚刚介绍这些参数的时候都已经附带了一些说明，感兴趣的也可以看看。反正最大堆内存和最小堆内存如果数值不同会导致多次的gc，需要注意。</p>
+<h3 id="45-小总结">4.5 小总结</h3>
+<p>根据实际事情调整新生代和幸存代的大小，官方推荐新生代占java堆的3/8，幸存代占新生代的1/10</p>
+<p>在OOM时，记得Dump出堆，确保可以排查现场问题，通过下面命令你可以输出一个.dump文件，这个文件可以使用VisualVM或者Java自带的Java VisualVM工具。</p>
+<pre><code>-Xmx20m -Xms5m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=你要输出的日志路径
+</code></pre>
+<p>一般我们也可以通过编写脚本的方式来让OOM出现时给我们报个信，可以通过发送邮件或者重启程序等来解决。</p>
+<h3 id="46-永久区的设置">4.6 永久区的设置</h3>
+<pre><code>-XX:PermSize -XX:MaxPermSize
+</code></pre>
+<p>初始空间（默认为物理内存的1/64）和最大空间（默认为物理内存的1/4）。也就是说，jvm启动时，永久区一开始就占用了PermSize大小的空间，如果空间还不够，可以继续扩展，但是不能超过MaxPermSize，否则会OOM。</p>
+<p>tips：如果堆空间没有用完也抛出了OOM，有可能是永久区导致的。堆空间实际占用非常少，但是永久区溢出 一样抛出OOM。</p>
+<h3 id="47-jvm的栈参数调优">4.7 JVM的栈参数调优</h3>
+<h4 id="471-调整每个线程栈空间的大小">4.7.1 调整每个线程栈空间的大小</h4>
+<p>可以通过-Xss：调整每个线程栈空间的大小</p>
+<p>JDK5.0以后每个线程堆栈大小为1M，以前每个线程堆栈大小为256K。在相同物理内存下,减小这个值能生成更多的线程。但是操作系统对一个进程内的线程数还是有限制的，不能无限生成，经验值在3000~5000左右</p>
+<h4 id="472-设置线程栈的大小">4.7.2 设置线程栈的大小</h4>
+<pre><code>-XXThreadStackSize：
+    设置线程栈的大小(0 means use default stack size)
+</code></pre>
+<p>这些参数都是可以通过自己编写程序去简单测试的，这里碍于篇幅问题就不再提供demo了</p>
+<h3 id="48-可以直接跳过了jvm其他参数介绍">4.8 (可以直接跳过了)JVM其他参数介绍</h3>
+<p>形形色色的参数很多，就不会说把所有都扯个遍了，因为大家其实也不会说一定要去深究到底。</p>
+<h4 id="481-设置内存页的大小">4.8.1 设置内存页的大小</h4>
+<pre><code>-XXThreadStackSize：
+    设置内存页的大小，不可设置过大，会影响Perm的大小
+</code></pre>
+<h4 id="482-设置原始类型的快速优化">4.8.2 设置原始类型的快速优化</h4>
+<pre><code>-XX:+UseFastAccessorMethods：
+    设置原始类型的快速优化
+</code></pre>
+<h4 id="483-设置关闭手动gc">4.8.3 设置关闭手动GC</h4>
+<pre><code>-XX:+DisableExplicitGC：
+    设置关闭System.gc()(这个参数需要严格的测试)
+</code></pre>
+<h4 id="484-设置垃圾最大年龄">4.8.4 设置垃圾最大年龄</h4>
+<pre><code>-XX:MaxTenuringThreshold
+    设置垃圾最大年龄。如果设置为0的话,则年轻代对象不经过Survivor区,直接进入年老代.
+    对于年老代比较多的应用,可以提高效率。如果将此值设置为一个较大值,
+    则年轻代对象会在Survivor区进行多次复制,这样可以增加对象再年轻代的存活时间,
+    增加在年轻代即被回收的概率。该参数只有在串行GC时才有效.
+</code></pre>
+<h4 id="485-加快编译速度">4.8.5 加快编译速度</h4>
+<pre><code>-XX:+AggressiveOpts
+</code></pre>
+<p>加快编译速度</p>
+<h4 id="486-改善锁机制性能">4.8.6 改善锁机制性能</h4>
+<pre><code>-XX:+UseBiasedLocking
+</code></pre>
+<h4 id="487-禁用垃圾回收">4.8.7 禁用垃圾回收</h4>
+<pre><code>-Xnoclassgc
+</code></pre>
+<h4 id="488-设置堆空间存活时间">4.8.8 设置堆空间存活时间</h4>
+<pre><code>-XX:SoftRefLRUPolicyMSPerMB
+    设置每兆堆空闲空间中SoftReference的存活时间，默认值是1s。
+</code></pre>
+<h4 id="489-设置对象直接分配在老年代">4.8.9 设置对象直接分配在老年代</h4>
+<pre><code>-XX:PretenureSizeThreshold
+    设置对象超过多大时直接在老年代分配，默认值是0。
+</code></pre>
+<h4 id="4810-设置tlab占eden区的比例">4.8.10 设置TLAB占eden区的比例</h4>
+<pre><code>-XX:TLABWasteTargetPercent
+    设置TLAB占eden区的百分比，默认值是1% 。 
+</code></pre>
+<h4 id="4811设置是否优先ygc">4.8.11设置是否优先YGC</h4>
+<pre><code>-XX:+CollectGen0First
+    设置FullGC时是否先YGC，默认值是false。
+</code></pre>
+<h2 id="finally">finally</h2>
+<p>真的扯了很久这东西，参考了多方的资料，有极客时间的《深入拆解虚拟机》和《Java核心技术面试精讲》，也有百度，也有自己在学习的一些线上课程的总结。希望对你有所帮助，谢谢。</p>
+
+            </div>
+            <hr style="width: 80%;">
+            
+            <div class="postfooter">
+                <ul class="post-copyright">
+                    <li><strong>文章作者：</strong></li>
+            <li><strong>原文链接：</strong>https://xuetongyao.github.io/post/jvm/</li>
+            <li><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用<i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA
+                许可协议。转载请注明出处！</li>
+            </ul>
+        </div>
+        
+            <div class="shareContainer">
+                <div class="share" style="height:30px;">
+                    <a class="qq" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/qqs.png" alt=""></i></a>
+                    <a class="wechat" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/wechats.png" alt=""></i></a>
+                    <a class="weibo" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/weibos.png" alt=""></i></a>
+                    <a class="qzone" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/qzones.png" alt=""></i></a>
+                    <a class="douban" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/doubans.png" alt=""></i></a>
+                    <a class="facebook" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/facebooks.png" alt=""></i></a>
+                    <a class="twitter" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/twitter.png" alt=""></i></a>
+                </div>
+            </div>
+            
+        <div id="otherpost">
+            
+            <a  data-pjax class="prev-post-pc" href="https://xuetongyao.github.io/post/mapreduce/"  style="color: black;">
+                <div id="ppcontainer">
+                    
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtxMkctjiF3ozA6BpDpv-4xZdXjs56fl9vg&amp;usqp=CAU" style="width: 100%;" class="opimg">
+                    
+                    <h4 class="optitle">Mapreduce</h4>
+                </div>
+            </a>
+            <div class="prev-post">
+                上一篇 <a  data-pjax href="https://xuetongyao.github.io/post/mapreduce/">Mapreduce</a>
+            </div>
+            
+            
+            <a data-pjax class="next-post-pc" href="https://xuetongyao.github.io/post/big-data/"  style="color: black;">
+                <div id="npcontainer">
+                    
+                    <img src="data:image/jpeg;base64,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" style="width: 100%;" class="opimg">
+                    
+                    <h4 class="optitle">Big Data</h4>
+                </div>
+            </a>
+            <div class="next-post">
+                下一篇 <a  data-pjax href="https://xuetongyao.github.io/post/big-data/">Big Data</a>
+            </div>
+            
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- 弹窗 -->
+    <div id="myModal" class="modal">
+        <img class="modal-content" id="img01">
+    </div>
+</body>
+<script>
+    //文章阅读热度
+    var pl = $("#pl").html();
+    var rootaddr = $("#rootaddr").html();
+    pl = pl.replace(rootaddr, "");
+    $("#hotnum").attr('id', pl);
+</script>
+                    <div class="toc-container">
+                        <ul class="markdownIt-TOC">
+<li><a href="#%E5%A4%A7%E7%99%BD%E8%AF%9D%E5%B8%A6%E4%BD%A0%E8%AE%A4%E8%AF%86jvm">大白话带你认识JVM</a>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E4%B8%80-jvm%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D">一、JVM的基本介绍</a>
+<ul>
+<li><a href="#11-java%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E8%A2%AB%E8%BF%90%E8%A1%8C%E7%9A%84">1.1 Java文件是如何被运行的</a>
+<ul>
+<li><a href="#1-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8">① 类加载器</a></li>
+<li><a href="#2-%E6%96%B9%E6%B3%95%E5%8C%BA">② 方法区</a></li>
+<li><a href="#3-%E5%A0%86">③ 堆</a></li>
+<li><a href="#4-%E6%A0%88">④ 栈</a></li>
+<li><a href="#5-%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8">⑤ 程序计数器</a></li>
+<li><a href="#%E5%B0%8F%E6%80%BB%E7%BB%93">小总结</a></li>
+</ul>
+</li>
+<li><a href="#12-%E7%AE%80%E5%8D%95%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BE%8B%E5%AD%90">1.2 简单的代码例子</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E4%BB%8B%E7%BB%8D">二、类加载器的介绍</a>
+<ul>
+<li><a href="#21-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E6%B5%81%E7%A8%8B">2.1 类加载器的流程</a>
+<ul>
+<li><a href="#211-%E5%8A%A0%E8%BD%BD">2.1.1 加载</a></li>
+<li><a href="#212-%E9%93%BE%E6%8E%A5">2.1.2 链接</a></li>
+<li><a href="#213-%E5%88%9D%E5%A7%8B%E5%8C%96">2.1.3 初始化</a></li>
+<li><a href="#214-%E5%8D%B8%E8%BD%BD">2.1.4 卸载</a></li>
+</ul>
+</li>
+<li><a href="#22-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F">2.2 类加载器的加载顺序</a></li>
+<li><a href="#23-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6">2.3 双亲委派机制</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA">三、运行时数据区</a>
+<ul>
+<li><a href="#31-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88%E5%92%8C%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8">3.1 本地方法栈和程序计数器</a></li>
+<li><a href="#32-%E6%96%B9%E6%B3%95%E5%8C%BA">3.2 方法区</a></li>
+<li><a href="#33-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E5%92%8C%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86">3.3 虚拟机栈和虚拟机堆</a>
+<ul>
+<li><a href="#331-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E7%9A%84%E6%A6%82%E5%BF%B5">3.3.1 虚拟机栈的概念</a></li>
+<li><a href="#332-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BC%82%E5%B8%B8">3.3.2 虚拟机栈存在的异常</a></li>
+<li><a href="#333-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">3.3.3 虚拟机栈的生命周期</a></li>
+<li><a href="#334-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%E7%9A%84%E6%89%A7%E8%A1%8C">3.3.4 虚拟机栈的执行</a></li>
+<li><a href="#335-%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%A4%8D%E7%94%A8">3.3.5 局部变量的复用</a></li>
+<li><a href="#336-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86%E7%9A%84%E6%A6%82%E5%BF%B5">3.3.6 虚拟机堆的概念</a></li>
+<li><a href="#337-eden%E5%B9%B4%E8%BD%BB%E4%BB%A3%E7%9A%84%E4%BB%8B%E7%BB%8D">3.3.7 Eden年轻代的介绍</a></li>
+<li><a href="#338-%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E9%9C%80%E8%A6%81%E8%A2%AB%E5%B9%B2%E6%8E%89">3.3.8 如何判断一个对象需要被干掉</a></li>
+<li><a href="#339-%E5%A6%82%E4%BD%95%E5%AE%A3%E5%91%8A%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%9C%9F%E6%AD%A3%E6%AD%BB%E4%BA%A1">3.3.9 如何宣告一个对象的真正死亡</a></li>
+</ul>
+</li>
+<li><a href="#34-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95">3.4 垃圾回收算法</a>
+<ul>
+<li><a href="#341-%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95">3.4.1 标记清除算法</a></li>
+<li><a href="#342-%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95">3.4.2 复制算法</a></li>
+<li><a href="#343-%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95">3.4.3 标记整理算法</a></li>
+<li><a href="#344-%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95">3.4.4 分代收集算法</a></li>
+</ul>
+</li>
+<li><a href="#35-%E4%BA%86%E8%A7%A3%E5%90%84%E7%A7%8D%E5%90%84%E6%A0%B7%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8">3.5 （了解）各种各样的垃圾回收器</a></li>
+<li><a href="#36-%E4%BA%86%E8%A7%A3jvm%E7%9A%84%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0">3.6 （了解）JVM的常用参数</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9B-%E5%85%B3%E4%BA%8Ejvm%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B9%E9%9D%A2">四、关于JVM调优的一些方面</a>
+<ul>
+<li><a href="#41-%E8%B0%83%E6%95%B4%E6%9C%80%E5%A4%A7%E5%A0%86%E5%86%85%E5%AD%98%E5%92%8C%E6%9C%80%E5%B0%8F%E5%A0%86%E5%86%85%E5%AD%98">4.1 调整最大堆内存和最小堆内存</a></li>
+<li><a href="#42-%E8%B0%83%E6%95%B4%E6%96%B0%E7%94%9F%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E6%AF%94%E5%80%BC">4.2 调整新生代和老年代的比值</a></li>
+<li><a href="#43-%E8%B0%83%E6%95%B4survivor%E5%8C%BA%E5%92%8Ceden%E5%8C%BA%E7%9A%84%E6%AF%94%E5%80%BC">4.3 调整Survivor区和Eden区的比值</a></li>
+<li><a href="#44-%E8%AE%BE%E7%BD%AE%E5%B9%B4%E8%BD%BB%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E5%A4%A7%E5%B0%8F">4.4 设置年轻代和老年代的大小</a></li>
+<li><a href="#45-%E5%B0%8F%E6%80%BB%E7%BB%93">4.5 小总结</a></li>
+<li><a href="#46-%E6%B0%B8%E4%B9%85%E5%8C%BA%E7%9A%84%E8%AE%BE%E7%BD%AE">4.6 永久区的设置</a></li>
+<li><a href="#47-jvm%E7%9A%84%E6%A0%88%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98">4.7 JVM的栈参数调优</a>
+<ul>
+<li><a href="#471-%E8%B0%83%E6%95%B4%E6%AF%8F%E4%B8%AA%E7%BA%BF%E7%A8%8B%E6%A0%88%E7%A9%BA%E9%97%B4%E7%9A%84%E5%A4%A7%E5%B0%8F">4.7.1 调整每个线程栈空间的大小</a></li>
+<li><a href="#472-%E8%AE%BE%E7%BD%AE%E7%BA%BF%E7%A8%8B%E6%A0%88%E7%9A%84%E5%A4%A7%E5%B0%8F">4.7.2 设置线程栈的大小</a></li>
+</ul>
+</li>
+<li><a href="#48-%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E8%B7%B3%E8%BF%87%E4%BA%86jvm%E5%85%B6%E4%BB%96%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D">4.8 (可以直接跳过了)JVM其他参数介绍</a>
+<ul>
+<li><a href="#481-%E8%AE%BE%E7%BD%AE%E5%86%85%E5%AD%98%E9%A1%B5%E7%9A%84%E5%A4%A7%E5%B0%8F">4.8.1 设置内存页的大小</a></li>
+<li><a href="#482-%E8%AE%BE%E7%BD%AE%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BF%AB%E9%80%9F%E4%BC%98%E5%8C%96">4.8.2 设置原始类型的快速优化</a></li>
+<li><a href="#483-%E8%AE%BE%E7%BD%AE%E5%85%B3%E9%97%AD%E6%89%8B%E5%8A%A8gc">4.8.3 设置关闭手动GC</a></li>
+<li><a href="#484-%E8%AE%BE%E7%BD%AE%E5%9E%83%E5%9C%BE%E6%9C%80%E5%A4%A7%E5%B9%B4%E9%BE%84">4.8.4 设置垃圾最大年龄</a></li>
+<li><a href="#485-%E5%8A%A0%E5%BF%AB%E7%BC%96%E8%AF%91%E9%80%9F%E5%BA%A6">4.8.5 加快编译速度</a></li>
+<li><a href="#486-%E6%94%B9%E5%96%84%E9%94%81%E6%9C%BA%E5%88%B6%E6%80%A7%E8%83%BD">4.8.6 改善锁机制性能</a></li>
+<li><a href="#487-%E7%A6%81%E7%94%A8%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6">4.8.7 禁用垃圾回收</a></li>
+<li><a href="#488-%E8%AE%BE%E7%BD%AE%E5%A0%86%E7%A9%BA%E9%97%B4%E5%AD%98%E6%B4%BB%E6%97%B6%E9%97%B4">4.8.8 设置堆空间存活时间</a></li>
+<li><a href="#489-%E8%AE%BE%E7%BD%AE%E5%AF%B9%E8%B1%A1%E7%9B%B4%E6%8E%A5%E5%88%86%E9%85%8D%E5%9C%A8%E8%80%81%E5%B9%B4%E4%BB%A3">4.8.9 设置对象直接分配在老年代</a></li>
+<li><a href="#4810-%E8%AE%BE%E7%BD%AEtlab%E5%8D%A0eden%E5%8C%BA%E7%9A%84%E6%AF%94%E4%BE%8B">4.8.10 设置TLAB占eden区的比例</a></li>
+<li><a href="#4811%E8%AE%BE%E7%BD%AE%E6%98%AF%E5%90%A6%E4%BC%98%E5%85%88ygc">4.8.11设置是否优先YGC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#finally">finally</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                    <div class="tog">
+                        <div class="toggleContainer">
+                            <div class="toggle">
+                                <i class="fas fa-angle-double-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!---------------------------- 评论系统👇 ------------------------->
+                    <div id="comment" class="comment">
+                        <div class="commentcontainer">
+                            
+                                
+                            
+                        </div>
+                    </div>
+                    <!---------------------------- 评论系统👆 ------------------------->
+                </div>
+                <!-- main标签，pjax渲染时加载以上内容👆 -->
+                <div class="col-md-1 col-lg-2"></div>
+                <div id="bg">
+                </div>
+            </div>
+            <!-- ----------------左侧菜单栏html 👆-------------------------------------->
+            
+        </div>
+        <!-- aplayer播放器加载👇 -->
+            
+            <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+</head>
+
+<body>
+    <div class="miniMode">
+        <meting-js id="myaplayer" server="netease" type="playlist" fixed="true" order="default" muted="muted">
+        </meting-js>
+    </div>
+</body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script>
+    function aplayerInit() {
+        var aplayerid = "228374769";
+        var aplayerserver = "netease";
+        var aplayerorder = "random";
+        var aplayerautoplay = "true";
+        var aplayer = $("#myaplayer");
+        aplayer.attr("server", aplayerserver);
+        aplayer.attr("id", aplayerid);
+        aplayer.attr("order", aplayerorder);
+        if (aplayerautoplay == "true")
+            aplayer.attr("autoplay", "true");
+    }
+    aplayerInit();
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/Aplayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+<script>
+    function aplayerbtnInit() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        if(player==undefined)return false;
+        player.lrc.hide();
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == false) {
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+
+    function aplayerPlay() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == true) {
+            player.play();
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            player.pause();
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+</script>
+            
+        <!-- aplayer播放器加载👆 -->
+    </div>
+    <!-- 背景图加载方式👇 -->
+    <div id="bgchoice" style="display: none">link
+                </div>
+                
+                <div id="bgurl" style="display:none">https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUyGl4FHNpVjeTeKracxQDllffgL0zyiRMVA&amp;usqp=CAU</div>
+                
+    <!-- 背景图加载方式👆 -->
+</body>
+
+<script>
+    //初始化
+    //更换twikoo头像
+    setTimeout(replaceAvatar,1000);
+    setTimeout(replaceAvatar,2000);
+    setTimeout(replaceAvatar,8000);
+    // --------为每张图片添加懒加载（lazyload）标签-->懒加载功能 👇------------
+    lazyload();
+    //为文章内所有代码块添加代码复制功能 👇
+    codeinit();
+    // ------代码高亮显示功能-------------
+    hljs.initHighlightingOnLoad();
+    if (shareChoice)
+        shareInit();
+    if (donateChoice)
+        donateInit();
+</script>
+
+<!------------------ 加载live2d模型功能（看板娘）👇 ---------------->
+
+<!------------------ 加载live2d模型功能（看板娘）👆 ---------------->
+
+
+<!----------------------- 返回顶部按钮功能👇 --------------------->
+<script>
+    $(function () {
+        $('.toggleContainer').click(function () {
+            $('html,body').animate({
+                scrollTop: '0px'
+            }, 800);
+        });
+        $(window).scroll(function () {
+            var st = $(window).scrollTop();
+            if (st > 30) {
+                $(".toggleContainer").fadeIn(400);
+            } else {
+                $(".toggleContainer").fadeOut(100);
+            }
+        });
+    });
+</script>
+<!----------------------- 返回顶部按钮功能👆 --------------------->
+
+
+<!------------ 加载全局背景图功能👇（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+<script>
+    var bgchoice = "link"
+    var bg = $('#bg');
+    var bgurl = document.getElementById("bgurl").innerHTML;
+    if (bgchoice == 'default')
+    {
+        for (var i = 0; i < 3; i++)
+            bgurl = bgurl.replace("\\", "/");
+        bgurl = "https://xuetongyao.github.io/" + bgurl;
+    }
+    bg.css("background", "url('" + bgurl + "')");
+
+    window.onload = function () {
+        aplayerbtnInit();
+    }
+</script>
+<!------------ 加载全局背景图功能👆（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+
+
+
+
+<script src="https://xuetongyao.github.io/media/js/index.js"></script>
+
+
+<script>
+    //加载后的事件同步（阅读量、移动端评论等
+    window.onload = function () {
+    //代码块高亮渲染
+    document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+    });
+        getHotnum();
+        var sharepc = $(".share").eq(0).html();
+        $(".share").eq(1).html(sharepc);   //插件只会寻找一个分享标签渲染，所以需要手动添加到移动端
+        aplayerbtnInit();
+        $(".hljs").css({
+            "padding": "20px"
+        })
+    }
+</script>
+
+<!-- <script src="https://xuetongyao.github.io/media/js/av-min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@3.13.0/dist/av-min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.6.1/dist/av-live-query-min.js"></script> -->

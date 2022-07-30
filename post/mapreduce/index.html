@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Hadoop解决大规模数据分布式计算的方案是MapReduce。MapReduce既是一个编程模型，又是一个计算框架。也就是说，开发人员必须基于MapReduce编程模型进行编程开发，然后将程序通过MapReduce计算框架分发到Hadoo..." />
+    <meta name="keywords" content="mapreduce,Big Data" />
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    <!-- 代码渲染风格css -->
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/rainbow.min.css">
+    
+    <!-- 代码高亮插件 -->
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <!-- 代码复制插件 -->
+    <script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/clipboard.min.js"></script>
+    <!-- live2d插件 -->
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <!-- 数学公式 -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css"
+        integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js"
+        integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js"
+        integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous">
+        </script>
+    <script>
+        renderMathInElement(document.body, {
+            delimiters: [{
+                left: "$$",
+                right: "$$",
+                display: true
+            },
+            {
+                left: "$",
+                right: "$",
+                display: false
+            }
+            ]
+        });
+    </script>
+    
+    <title>Mapreduce</title>
+
+    <!-- 大纲索引css调整 -->
+    
+    <style>
+        .markdownIt-TOC {
+            margin-left: 28%;
+            padding-left: 2px;
+            width: 80%;
+        }
+
+        .markdownIt-TOC li {
+            padding-left: 8%;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="landlord">
+        <div class="message" style="opacity:0"></div>
+        <canvas id="live2d" width="240" height="250" class="live2d"></canvas>
+    </div>
+    <div id="domainname" style="display:none">https://xuetongyao.github.io</div>
+    <div id="content">
+        <div>
+            <!----------- 移动端导航栏👇 ----------------->
+            <div id="bar">
+                <style>
+  .navmobile {
+    z-index: 15;
+    max-height: 40vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .navbar {
+      max-width: 100vw;
+    }
+  }
+
+  @media screen and (max-width:1200px) and (min-width: 768px) {
+    @media (min-width: 768px) {
+      .navbar-nav {
+        float: right;
+        margin: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width:768px) {
+    .mbapspan {
+      padding: 0;
+    }
+  }
+</style>
+<div class="pjaxloading"  onclick="pjaxloadingClose()">
+  <div class="loadingbackground"></div>
+  <div id="loading">
+    <div class="loading">
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-inverse navbar-fixed-top navmobile">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#barmenu"
+        aria-expanded="false" id="barbutton">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a data-pjax class="navbar-brand" style="color:white" href="https://xuetongyao.github.io">tongyao&#39;s blog&nbsp;&nbsp;|</a>
+      <span class="navbar-brand mbapspan"><i id="mbaplayer" class="fa fa-play-circle-o" aria-hidden="true"
+          style="font-size: 28px;top: 12px;position: absolute;" onclick="aplayerPlay();"></i></span>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="barmenu">
+      <ul class="nav navbar-nav">
+        
+        
+        <li>
+          <a data-pjax href="/" style="color:white">
+            首页
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/archives" style="color:white">
+            归档
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/tags" style="color:white">
+            标签
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/post/about" style="color:white">
+            关于
+          </a>
+        </li>
+        
+        
+        
+        
+          
+        <li><a data-pjax href="https://xuetongyao.github.io/friends" style="color:white">友链</a></li>
+
+        
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+  <!-- 引入jQuery核心js文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+  <script>
+    let btstate = false;
+    var bt = $("#barbutton");
+    var bm = $("#barmenu");
+    bt.click(function () {
+      dropdown();
+    })
+    function dropdown() {
+      console.log(btstate);
+      //下拉
+      if (btstate == false) {
+        bt.removeClass("collapsed");
+        bt.attr("aria-expanded", "true");
+        bm.attr("aria-expanded", "true")
+        bm.fadeIn(700);
+        btstate = true;
+      }
+      else {
+        bt.addClass("collapsed");
+        bt.attr("aria-expanded", "false");
+        bm.removeClass("in");
+        bm.hide();
+        bm.attr("aria-expanded", "false");
+        btstate = false;
+      }
+    }
+  </script> 
+            </div>
+            <!----------- 移动端导航栏👆 ----------------->
+
+            <!--------------- pc端菜单栏👇 ---------------->
+            <div class="side"><head>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/rainbow.min.css">
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/clipboard.min.js"></script>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- fancybox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+    <!--------- 数学公式👇---- -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css"
+        integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js"
+        integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js"
+        integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous">
+    </script>
+    <script>
+        renderMathInElement(document.body, {
+            delimiters: [{
+                    left: "$$",
+                    right: "$$",
+                    display: true
+                },
+                {
+                    left: "$",
+                    right: "$",
+                    display: false
+                }
+            ]
+        });
+    </script>
+    
+    <!--------- 数学公式👆----------------- -->
+    <!--------- daovocie功能👇 ------------------->
+    
+    <!--------- daovocie功能👆 ------------------->
+    <!-- -----------------twikoo评论系统引入👇 --------->
+    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js"></script>
+    <!-- -----------------twikoo评论系统引入👆 --------->
+    <!---------------- leancloud api 功能依赖引入👇 -------->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@3.13.0/dist/av-min.js"></script>
+    <!---------------- leancloud api 功能依赖引入👆 -------->
+    <!------------------ valine评论系统引入👇 ------------------>
+    <script src="https://xuetongyao.github.io/media/js/valine.min.js"></script>
+    <!------------------ valine评论系统引入👆 ------------------>
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <!---------------- 今日诗词api功能依赖👆 ----------------------->
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ispeak-bber/ispeak-bber.min.js" charset="utf-8"></script>
+    <!---------------- 哔哔功能依赖👆 ----------------------->
+
+
+</head>
+
+<style>
+    body {
+        overflow-x: hidden;
+        height: 100vh;
+        overflow-y: scroll;
+        cursor: url("https://xuetongyao.github.io/media/images/mouse_cursor.png"), auto
+    }
+</style>
+
+<body>
+    <!--=------ 页面加载动态画面👇 --------------->
+    <div class="pjaxloading" onclick="pjaxloadingClose()">
+        <div class="loadingbackground"></div>
+        <div id="loading-aname">
+            <div class="loading-aname">
+            </div>
+        </div>
+    </div>
+    <!--=------ 页面加载动态画面👆 --------------->
+
+    <!--------------- 左侧菜单栏👇 ------------------------>
+    
+    <div id=side>
+        <div class="r_m_div">
+            <a onclick="showAaplayer()"><i style="font-size: 20px;"><img
+                        src='https://xuetongyao.github.io/media/images/music.png' alt="音乐播放器" class="musicbtn"></i></a>
+        </div>
+        <div class="avatar-border">
+            <img src="https://xuetongyao.github.io/images/avatar.png?v=1659154940236" class="avatar">
+        </div>
+        <div class="sitename">tongyao&#39;s blog</div>
+        <span class="description" data-text='["距离之所以可怕，因为根本不知道对方是把你想念，还是把你忘记"]'>&nbsp;</span>
+        <div class="siteinfocontainer">
+            <span class="siteinfo">文章</span>
+            <span class="siteinfo">标签</span>
+        </div>
+        <div class="siteinfocontainer">
+            <span class="siteinfo" id="siteinfo-postsnum"></span>
+            <span class="siteinfo">8</span>
+        </div>
+        
+        <div class="search">
+            <!-- <input type="text" class="search-input" placeholder="标题搜索(●'◡'●)" /> -->
+            <input type="text" class="search-input" placeholder="标题搜索 ⚆_⚆ つ♡">
+            <div class="search-results"></div>
+        </div>
+        
+    <div class="share-button">
+        <span>find me here!!</span>
+        
+        <a href="https://github.com/xuetongyao" target="_blank"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/github.png" alt=""></i></a>
+        
+        
+        <a onclick="showqq()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/QQ.png" alt=""></i></a>
+        
+        
+        
+        
+        <a onclick="showWechat()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/wechat.png" alt=""></i></a>
+        
+        
+        
+        
+    </div>
+    <div id="qq" style="display:none">815146666</div>
+    <!------------ 加载菜单按钮👇 ------------------------->
+    <div class="menucontainer">
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="首页"></i>&nbsp;<span
+                    data-text="首页">首页</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/archives" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="归档"></i>&nbsp;<span
+                    data-text="归档">归档</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/tags" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="标签"></i>&nbsp;<span
+                    data-text="标签">标签</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/post/about" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="关于"></i>&nbsp;<span
+                    data-text="关于">关于</span>
+            </a>
+        </div>
+        
+        
+
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="https://xuetongyao.github.io/friends" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="友人帐"></i>&nbsp;<span data-text="友人帐">友人帐</span>
+            </a>
+        </div>
+        
+        <!--  -->
+    </div>
+    <!------------ 加载菜单按钮👆 ------------------------->
+    <hr>
+    <style>
+    .copyright {
+        font-size: 15px;
+        color: #d9d9d9;
+    }
+
+
+    @media screen and (min-width: 1200px) {
+        .foot {
+            width: 100%;
+            height: 130px;
+        }
+    }
+
+    @media screen and (max-width: 1200px) {
+        .foot {
+            display: none;
+        }
+    }
+</style>
+
+<body>
+    <div class="foot">
+        <div id="footinfo"> | Theme: <a
+                href="https://github.com/850552586/gridea-theme-fog">Fog</a>
+            <div>
+                
+            </div>
+            <div>
+                
+            </div>
+            <div class="copyright" style="color:white;text-align: center;">备案号: 沪ICP备2022004414号
+            </div>
+        </div>
+
+
+
+    </div>
+</body>
+
+    </div>
+
+    <img class="moon" src="https://xuetongyao.github.io/media/images/moon.png" onclick="moonlight()">
+    <script src="https://xuetongyao.github.io/media/js/wordshow.js"></script>
+    
+    <!--------------- 左侧菜单栏👆 ------------------------>
+
+    <!----------------- 顶部菜单栏👇 ------------------------>
+    
+    <!----------------- 顶部菜单栏👆 ------------------------>
+
+<!--核心功能加载-->
+<script src="https://xuetongyao.github.io/media/js/mainfunc.js"></script>
+
+<!------------- Fog1.0版本彩蛋👇 -------------->
+    <!-- <section id="terrestrial" class="popup">
+        <a href="#" class="back">&lt; back</a>
+    </section>
+
+    <div class="flycontainer">
+        <div class="flyword">御风飞行中...</div>
+    </div>
+
+    <script>
+        $("#fog_go").click(function(){fog_go()});
+        async function fog_go(){
+            $(".bars").hide()
+            $("#live2d").hide()
+            await sleep(3000);
+            $(".flycontainer").css("display","flex");
+            $(".popup").fadeOut(500)
+            await sleep(2000);
+            var sitename = "tongyao&#39;s blog";
+            getFogUser(sitename);
+        }
+
+        function fog_goregis(){
+            var sitename = "tongyao&#39;s blog";
+            var siteurl = "https://xuetongyao.github.io";
+            regisFogUser(sitename,siteurl);
+        }
+        fog_goregis();
+    </script> -->
+<!------------- Fog1.0版本彩蛋👆 -------------->
+<script>
+    function change_topmenu(){
+        tmcolor = "antiquewhite"
+        tsnamecolor = "antiquewhite"
+        $(".navbar-inverse .navbar-nav>li>a").css("color",tmcolor)
+        $(".navbar-inverse .navbar-brand").css("color",tsnamecolor)
+        $(".navbar-fixed-top").css("border-radius","0 0 10px 10px")
+    }
+</script>
+
+<!------ 根据自定义配置声明变量👇 --------------------->
+    
+    <script>
+        var postnumChoice = false
+    </script>
+    
+    
+    <script>
+        var shareChoice = true
+    </script>
+    
+    
+    <script>
+        var donateChoice = false
+    </script>
+    
+    
+    <script>
+        var searchChoice = true
+    </script>
+    
+    <script>let postsnum = 0;</script>
+    <div id="side-posttitle" style="display: none;">
+    
+    
+    OpenFegin 进行远程服务调用
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    HashMap
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Mapreduce
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    JVM
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Big Data
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    Hello Gridea
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    </div>
+    
+        <script>
+            var menupos = 'left';
+            $("#siteinfo-postsnum").html(postsnum);
+        </script>
+    
+    <script>
+        let commentsHide = false
+    </script>
+    <!------ 根据自定义配置声明变量👆 --------------------->
+
+
+    <!----------根据自定义配置设置图标信息👇---------->
+    <script>
+        var icondict = new Array();
+    </script>
+    
+        
+    
+    <!----------根据自定义配置设置图标信息👆---------->
+</body>
+
+<script src="https://xuetongyao.github.io/media/share/dist/Share.js"></script>
+<!-- 页面pjax测试 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js"></script>
+<!--确保jQuery已经在此之前加载-->
+<!-- <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script> -->
+<script src="https://xuetongyao.github.io/media/js/all-pjax.js"></script>
+<script>
+    //-------------------------------说说功能👇--------------------------------------
+    let talksall = [];
+    let talks = [];
+    let talkindex = 0;
+    get();
+
+    function get() {
+        var t = JSON.parse('[]');
+        talkindex = t.length - 1;
+        for (var i = 0; i <= t.length - 1; i++) {
+            var d = {};
+            d["time"] = t[i].time;
+            d["author"] = t[i].author;
+            d["text"] = t[i].text;
+            d["img"] = t[i].img;
+            talksall.push(d);
+        }
+    }
+
+    function add() {
+        for (var i = talkindex; i >= 0 && i > talkindex - 3; i--) {
+            talks.push(talksall[i]);
+        }
+        talkindex = (talkindex - 3) >= 0 ? (talkindex - 3) : -1;
+        if (talkindex < 0) $("#getmorebt").hide();
+        show();
+    }
+
+    function show() {
+        var talkT = document.getElementById("talkContainer");
+        talkT.innerHTML = "";
+        for (var i = 0; i < talks.length; i++) {
+            if (talks[i].img != '') {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <span data-fancybox="images" href="' + talks[i].img + '"><img src="' + talks[i].img + '" class="talkimg"></span> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            } else {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            }
+        }
+    }
+    //-------------------------------说说功能👆--------------------------------------
+</script>
+
+<!---->
+<script>
+    function replaceAvatar() {
+        twikoo_avatar = $(".tk-avatar-img");
+        for (var i = 0; i < twikoo_avatar.length; i++) {
+            var asrc = twikoo_avatar.eq(i).attr('src');
+            if (asrc.search('cn.gravatar.com') != -1) {
+                twikoo_avatar.eq(i).attr('src', 'https://xuetongyao.github.io/media/images/comavatar.png');
+            }
+        }
+    }
+
+    function showWechat() {
+        var wechat = 'XueTongyao_';
+        alert("博主微信号：" + wechat);
+        return false;
+    }
+</script>
+
+<script>
+    /**
+     * https://github.com/tangkaichuan/gridea-search
+     */
+    // 检查缓存是否最新
+    function checkCache() {
+        var caches_postsnum = localStorage.getItem("postsnum");
+        var pt = document.getElementById("side-posttitle").innerHTML;
+        pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "")
+        var ptlen = pt.length;
+        var ptlen_storage = localStorage.getItem("poststitlelen");
+        if (caches_postsnum != postsnum || ptlen != ptlen_storage) {
+            console.log("更新缓存");
+            return false
+        }
+        return true;
+    }
+
+    (function () {
+        var CACHES = checkCache()
+        if (!CACHES) {
+            var NOW = Date.now()
+            var API_CONTENT = '../api-content/index.html' + '?_=' + NOW
+            preload(API_CONTENT);
+            getContents(show_getContentresult);
+        }
+
+        function show_getContentresult(data) {
+            console.log("获取成功");
+            var postslen = data["posts"].length;
+            localStorage.setItem('postsnum', postslen);
+            var poststitlelen = 0;
+            var pt = document.getElementById("side-posttitle").innerHTML;
+            pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "");
+            localStorage.setItem('poststitlelen', pt.length);
+        }
+
+
+
+        // preload
+        function preload(url) {
+            var preloadLink = document.createElement('link')
+            preloadLink.href = url
+            preloadLink.rel = 'preload'
+            preloadLink.as = 'fetch'
+            preloadLink.crossOrigin = 'anonymous'
+            document.head.appendChild(preloadLink)
+        }
+
+        // 异步 GET 请求
+        function get(obj) {
+            var xhr = new XMLHttpRequest()
+            xhr.open('get', obj.url, true)
+            xhr.send(null)
+            xhr.onreadystatechange = function () {
+                // 异步请求：响应状态为4，数据加载完毕
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        obj.success(xhr.responseText)
+                    } else {
+                        obj.error(xhr.status)
+                    }
+                }
+            }
+        }
+
+        // 获取博客全文 api
+        function getContents(callback) {
+            if (CACHES) {
+                callback(CACHES.contents)
+            } else {
+                get({
+                    url: API_CONTENT,
+                    success: function (data) {
+                        callback(JSON.parse(data));
+                        localStorage.setItem('ContentsCache', data);
+                        getStorageContent();
+                    }
+                })
+            }
+        }
+    })()
+    //------------------------核心功能--pjax全局渲染👇-------------------
+    let talkinit = false;
+    $(document).pjax('a[data-pjax]', '#main', {
+        fragment: '#main',
+        timeout: 8000
+    }).on('pjax:complete', function () {
+        //代码块高亮渲染
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+        //文章热度
+        if(postnumChoice){
+            getHotnum();
+        }
+        //文章索引
+        toginit();
+        //清空搜索栏
+        if (searchChoice) {
+            searchInit();
+            searchInput.value = "";
+        }
+        var pl = window.location.pathname;
+        //说说更新
+        if (pl.search("talk") != -1 && !talkinit) {
+            add();
+            talkinit = true;
+        } else if (pl.search("talk") != -1) {
+            show();
+        }
+        if (pl.search("post") != -1) {
+            if (shareChoice)
+                shareInit();
+            if (donateChoice)
+                donateInit();
+            if ("default" == "default"&&!commentsHide) {
+                $("#comment").hide()
+                commentsHide = true
+            }
+            lazyload();
+            codeinit();
+            if ("default" == "twikoo") {
+                //twikoo头像更换
+                setTimeout(replaceAvatar, 3000);
+                setTimeout(replaceAvatar, 8000); //部分博主站点速度加载过慢，再添加一个延迟
+            }
+        }
+        if (btstate == true)
+            dropdown();
+    }).on('pjax:start', function () {
+        $(".pjaxloading").fadeIn(50);
+    }).on('pjax:end', function () {
+        $(".pjaxloading").fadeOut(50);
+    });
+    //------------------------核心功能--pjax全局渲染👆-------------------
+
+    //-------------------------------------------------搜索
+    // 获取搜索框、搜索按钮、清空搜索、结果输出对应的元素
+    if (searchChoice) {
+        var searchInput = document.querySelector('.search-input');
+        var searchResults = document.querySelector('.search-results');
+    }
+    // 申明保存文章的标题、链接、内容的数组变量
+    var searchValue = '',
+        arrItems = [],
+        arrLinks = [],
+        arrTitles = [],
+        arrContents = [],
+        arrResults = [],
+        indexItem = [],
+        itemLength = 0;
+    var tmpDiv = document.createElement('div');
+    tmpDiv.className = 'result-item';
+
+
+    function getStorageContent() {
+        var data = localStorage.getItem('ContentsCache');
+        data = JSON.parse(data);
+        posts = data["posts"];
+        for (var i = 0; i < posts.length; i++) {
+            arrLinks[i] = posts[i].link;
+            arrTitles[i] = posts[i].title;
+            arrContents[i] = posts[i].content;
+            itemLength++;
+        }
+    }
+    if (checkCache())
+        getStorageContent();
+    // 输入框内容变化后就开始匹配，可以不用点按钮
+    // 经测试，onkeydown, onchange 等方法效果不太理想，
+    // 存在输入延迟等问题，最后发现触发 input 事件最理想，
+    // 并且可以处理中文输入法拼写的变化
+    searchInput.oninput = function () {
+        setTimeout(searchConfirm, 0);
+    }
+    searchInput.onfocus = function () {
+        searchResults.style.display = 'block';
+    }
+
+    function searchConfirm() {
+        if (searchInput.value == '') {
+            searchResults.style.display = 'none';
+        } else if (searchInput.value.search(/^\s+$/) >= 0) {
+            // 检测输入值全是空白的情况
+            searchInit();
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '请输入有效内容...';
+            searchResults.appendChild(itemDiv);
+        } else {
+            // 合法输入值的情况
+            searchInit();
+            searchValue = searchInput.value;
+            // 在标题、内容中查找
+            searchMatching(arrTitles, arrContents, searchValue);
+        }
+    }
+
+    // 每次搜索完成后的初始化
+    function searchInit() {
+        arrResults = [];
+        indexItem = [];
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'block';
+    }
+
+    function searchMatching(arr1, arr2, input) {
+        // 忽略输入大小写
+        input = new RegExp(input, 'i');
+        var step = 10;
+        // 在所有文章标题、内容中匹配查询值
+        for (i = 0; i < itemLength; i++) {
+            var indexContent = arr2[i].search(input);
+            //标题匹配
+            if (arr1[i].search(input) != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+                if (indexContent != -1) {
+                    startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                    var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                    arrResults.push("....." + searchcontent + ".....");
+                } else
+                    arrResults.push("");
+            }
+            //内容匹配
+            else if (indexContent != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+
+                startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                arrResults.push("....." + searchcontent + ".....");
+            }
+        }
+
+        // 输出总共匹配到的数目
+        var totalDiv = tmpDiv.cloneNode(true);
+        totalDiv.innerHTML = '<b>总匹配：' + indexItem.length + ' 项<hr></b>';
+        searchResults.appendChild(totalDiv);
+
+        // 未匹配到内容的情况
+        if (indexItem.length == 0) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '未匹配到内容...';
+            searchResults.appendChild(itemDiv);
+        }
+
+        // 将所有匹配内容进行组合
+        for (i = 0; i < arrResults.length; i++) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerHTML = '<a data-pjax class="searchresults" href="' + arrLinks[indexItem[i]] + '"><b>[' +
+                arrTitles[indexItem[i]] +
+                ']</b><p>' + arrResults[i] + '</p></a><hr />';
+            searchResults.appendChild(itemDiv);
+        }
+    }
+</script>
+
+
+
+<!--------------------- 菜单栏图标加载功能👇 ----------------------->
+<script>
+var menulist = $(".menuicon");
+var menulength = menulist.length;
+for (var i = 0; i < menulength; i++) {
+    var altname = menulist.eq(i).attr("alt");
+    var iconurl = icondict[altname];
+    if (iconurl == undefined || iconurl == '')
+        continue;
+    if (iconurl == 'Home') {
+        menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Home.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Archive') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Archive.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Tag') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Tag.png");
+menulist.eq(i).show();
+} else if (iconurl == 'About') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/About.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Talk') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Talk.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Friends') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Friends.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Fly') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/wind.png");
+menulist.eq(i).show();
+} else {
+menulist.eq(i).attr("src", iconurl);
+menulist.eq(i).show();
+}
+}
+</script>
+<!--------------------- 菜单栏图标加载功能👆 ----------------------->
+
+<script>
+    //--------------------bber-onetalk加载👇--------------------------------
+    function bberonetalkLoad(){
+        bberjsonurl = '';
+        if ( $("#bber-talk").length > 0 ) {
+        jsonUrl = bberjsonurl
+        $.getJSON(jsonUrl+"?t="+Date.parse( new Date()),function(res){
+        var bberHtml = ''
+        $.each(res.data, function(i, item){
+            d = new Date(item.date)
+            date = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate() +' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+            dataTime = '<span class="datatime">'+date+'</span>'
+            bberHtml += '<li class="item item-'+(i+1)+'">'+dataTime+'： <a data-pjax href="https://xuetongyao.github.io/bber">'+item.content+'</a></li>'
+        });
+        $('#bber-talk').append('<span class="index-talk-icon"><svg viewBox="0 0 1024 1024" width="21" height="21"><path d="M184.32 891.667692c-12.603077 0-25.206154-2.363077-37.809231-7.876923-37.021538-14.966154-59.864615-49.624615-59.864615-89.009231v-275.692307c0-212.676923 173.292308-385.969231 385.969231-385.969231h78.76923c212.676923 0 385.969231 173.292308 385.969231 385.969231 0 169.353846-137.846154 307.2-307.2 307.2H289.083077l-37.021539 37.021538c-18.904615 18.116923-43.323077 28.356923-67.741538 28.356923zM472.615385 195.347692c-178.018462 0-322.953846 144.935385-322.953847 322.953846v275.692308c0 21.267692 15.753846 29.144615 20.48 31.507692 4.726154 2.363077 22.055385 7.876923 37.021539-7.08923l46.473846-46.473846c6.301538-6.301538 14.178462-9.452308 22.055385-9.452308h354.461538c134.695385 0 244.184615-109.489231 244.184616-244.184616 0-178.018462-144.935385-322.953846-322.953847-322.953846H472.615385z"></path><path d="M321.378462 512m-59.076924 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M518.301538 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M715.224615 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153846 0 59.076923 59.076923 0 1 0-118.153846 0Z"></path></svg></span><ul class="talk-list">'+bberHtml+'</ul>')
+        //Lately({ 'target': '#bber-talk .datatime' });
+        });
+        function Roll (){
+        var list_li = $('.talk-list li'),cur_li = list_li.first(),last_li = list_li.last();
+        last_li.after(cur_li);
+        };
+        setInterval(Roll,3000);
+    }
+    }
+  //--------------------bber-onetalk加载👆--------------------------------
+</script>
+
+<script>
+    var ClicksideState = 1
+    var cur_readingmode = false
+    function readingmode(){
+        if (!cur_readingmode){
+            if(menupos == 'left'){
+                if(ClicksideState==1)
+                menu_openclose1()
+            }
+            $("#tab1").fadeOut(50)
+            $("#bg").fadeOut(50)
+            $(".navbar").fadeOut(50)
+            $(".markdownIt-TOC li a").css("color","black")
+            cur_readingmode = true
+        }else{
+            if(menupos == 'left'){
+                if(ClicksideState==0)
+                    menu_openclose1()
+            }
+            $("#tab1").fadeIn(50)
+            $("#bg").fadeIn(50)
+            $(".navbar").fadeIn(50)
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            cur_readingmode = false  
+        }
+    }
+</script>
+
+
+<!----夜间模式👇-->
+<script>
+    var moonlightState = false
+    function moonlight(){
+        if(!moonlightState){
+            $("#bg").fadeOut(200)
+            $('body').css("background","rgba(0,0,0,0.8)")
+            $(".markdownIt-TOC li a").css("color","white")
+            $(".text p, .text ul").css("color","white")
+            $("#articlecontent").css("color","white")
+            $(".post-copyright").css("background","rgba(10,10,10,0.5)")
+            $('blockquote').css("background","rgba(10,10,10,0.6)")
+            $("#articlecontent").css("background","rgba(10,10,10,0.5)")
+            moonlightState = true
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/sun.png")
+        }else{
+            $("#bg").show()
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            $(".text p, .text ul").css("color","rgba(0, 0, 0, 0.7)")
+            $("#articlecontent").css("color","black")
+            $(".post-copyright").css("background","#f9f9f9")
+            $('blockquote').css("background","#eff8f0")
+            $("#articlecontent").css("background","white")
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/moon.png")
+            $('body').css("background","white")
+            moonlightState = false
+        }
+    }
+</script>
+<!----夜间模式👆--></div>
+            <!--------------- pc端菜单栏👆 ---------------->
+
+            <!-- ----------------左侧菜单栏html 👇-------------------------------------->
+            
+            <div>
+                <div id="tab1" class="tab">
+                    <div class="bars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="close"></div>
+                </div>
+                <div class="col-md-1 col-lg-3"></div>
+                <!-- main标签，pjax渲染时加载以下内容👇 -->
+                <div id="main" class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="padding:0;">
+                    <div class="readingmode" onclick="readingmode()">阅</div>
+                    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/font-awesome.css">
+
+<body>
+    <div class="allcontent" id="postdetail">
+        <div class="postshow postpadding" style="padding-bottom: 0;">
+            
+            <div class="postdetailimg">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtxMkctjiF3ozA6BpDpv-4xZdXjs56fl9vg&amp;usqp=CAU" class="postimage" style="cursor:auto">
+            </div>
+            <div class="postinfo-detail">
+                <div class="postdate"><i class="fa fa-calendar"></i>2022-07-27</div>
+                <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 10 min read</div>
+                <div class="posttag">
+                    
+                    <a data-pjax href="https://xuetongyao.github.io/tag/K0myc6mSB/" class="postlink">
+                        <i class="fa fa-tag"></i> mapreduce
+                    </a>
+                    
+                    <a data-pjax href="https://xuetongyao.github.io/tag/F9rBBNUVn/" class="postlink">
+                        <i class="fa fa-tag"></i> Big Data
+                    </a>
+                    
+                </div>
+            </div>
+            
+        <div id="articlecontent">
+            <div id="texttitle" style="text-align: center">
+                <h2 id="ptitle">Mapreduce</h2>
+                <!-- id 将作为查询条件 -->
+                <div id="pl" style="display:none">https://xuetongyao.github.io/post/mapreduce/</div>
+                <div id="rootaddr" style="display:none">https://xuetongyao.github.io</div>
+                
+            </div>
+            <div class="text ">
+                <p>Hadoop解决大规模数据分布式计算的方案是MapReduce。MapReduce既是一个编程模型，又是一个计算框架。也就是说，开发人员必须基于MapReduce编程模型进行编程开发，然后将程序通过MapReduce计算框架分发到Hadoop集群中运行。我们先看一下作为编程模型的MapReduce。</p>
+<h3 id="mapreduce编程模型">MapReduce编程模型</h3>
+<p>MapReduce是一种非常简单又非常强大的编程模型。</p>
+<p>简单在于其编程模型只包含map和reduce两个过程，map的主要输入是一对&lt;key , value&gt;值，经过map计算后输出一对&lt;key , value&gt;值；然后将相同key合并，形成&lt;key , value集合&gt;；再将这个&lt;key , value集合&gt;输入reduce，经过计算输出零个或多个&lt;key , value&gt;对。</p>
+<p>但是MapReduce同时又是非常强大的，不管是关系代数运算（SQL计算），还是矩阵运算（图计算），大数据领域几乎所有的计算需求都可以通过MapReduce编程来实现。</p>
+<p>我们以WordCount程序为例。WordCount主要解决文本处理中的词频统计问题，就是统计文本中每一个单词出现的次数。如果只是统计一篇文章的词频，几十K到几M的数据，那么写一个程序，将数据读入内存，建一个Hash表记录每个词出现的次数就可以了，如下图。</p>
+<figure data-type="image" tabindex="1"><img src="MapReduce%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%92%8C%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86.resources/9BC09734-6728-4F29-A798-AE7684F1C04E.png" alt="1cf32673aae43e61a75847b066884057" loading="lazy"></figure>
+<p>但是如果想统计全世界互联网所有网页（数万亿计）的词频数（这正是google这样的搜索引擎典型需求），你不可能写一个程序把全世界的网页都读入内存，这时候就需要用MapReduce编程来解决。</p>
+<p>WordCount的MapReduce程序如下。</p>
+<pre><code>public class WordCount {
+
+public static class TokenizerMapper
+extends Mapper&lt;Object, Text, Text, IntWritable&gt;{
+
+private final static IntWritable one = new IntWritable(1);
+private Text word = new Text();
+
+public void map(Object key, Text value, Context context
+) throws IOException, InterruptedException {
+StringTokenizer itr = new StringTokenizer(value.toString());
+while (itr.hasMoreTokens()) {
+word.set(itr.nextToken());
+context.write(word, one);
+}
+}
+}
+
+public static class IntSumReducer
+extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
+private IntWritable result = new IntWritable();
+
+public void reduce(Text key, Iterable&lt;IntWritable&gt; values,
+Context context
+) throws IOException, InterruptedException {
+int sum = 0;
+for (IntWritable val : values) {
+sum += val.get();
+}
+result.set(sum);
+context.write(key, result);
+}
+}
+}
+</code></pre>
+<p>其核心是一个map函数，一个reduce函数。</p>
+<p>map函数的输入主要是一个&lt;key , value&gt;对，在这个例子里，value是要统计的所有文本中的一行数据，key在这里不重要，我们忽略。</p>
+<pre><code>public void map(Object key, Text value, Context context)
+</code></pre>
+<p>map函数的计算过程就是，将这行文本中的单词提取出来，针对每个单词输出一个&lt;word , 1&gt;这样的&lt;key , value&gt;对。</p>
+<p>MapReduce计算框架会将这些&lt;word , 1&gt;收集起来，将相同的word放在一起，形成&lt;word , &lt;1,1,1,1,1,1,1.....&gt;&gt;这样的&lt;key , value集合&gt;数据，然后将其输入给reduce函数。</p>
+<pre><code>public void reduce(Text key, Iterable&lt;IntWritable&gt; values,Context context)
+</code></pre>
+<p>这里的reduce的输入参数values就是由很多个1组成的集合，而key就是具体的单词word。</p>
+<p>reduce函数的计算过程就是，将这个集合里的1求和，再将单词（word）和这个和（sum）组成一个&lt;key , value&gt;(&lt;word , sum&gt;)输出。每一个输出就是一个单词和它的词频统计总和。</p>
+<p>假设有两个block的文本数据需要进行词频统计，MapReduce计算过程如下图。<br>
+<img src="resources/80C38BAC-B7B6-413A-9504-44AF99C5FB27.png" referrerpolicy="no-referrer" style="margin: auto;" /></p>
+<h3 id="mapreduce计算过程">MapReduce计算过程</h3>
+<p>一个map函数可以针对一部分数据进行运算，这样就可以将一个大数据切分成很多块（这也正是HDFS所做的），MapReduce计算框架为每个块分配一个map函数去计算，从而实现大数据的分布式计算。</p>
+<p>上面提到MapReduce编程模型将大数据计算过程切分为map和reduce两个阶段，在map阶段为每个数据块分配一个map计算任务，然后将所有map输出的key进行合并，相同的key及其对应的value发送给同一个reduce任务去处理。</p>
+<p>这个过程有两个关键问题需要处理</p>
+<ul>
+<li>
+<p>如何为每个数据块分配一个map计算任务，代码是如何发送数据块所在服务器的，发送过去是如何启动的，启动以后又如何知道自己需要计算的数据在文件什么位置（数据块id是什么）</p>
+</li>
+<li>
+<p>处于不同服务器的map输出的&lt;key , value&gt; ，如何把相同的key聚合在一起发送给reduce任务</p>
+</li>
+<li>
+<p>这两个关键问题正好对应文章中“MapReduce计算过程”一图中两处“MapReduce框架处理”。</p>
+</li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="MapReduce%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%92%8C%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86.resources/0EAF1DCB-D641-4F33-A093-41B6AFE34EE2.png" alt="fe3a4f4e8603397638a92d67964c8b0e" loading="lazy"></figure>
+<p>我们先看下MapReduce是如何启动处理一个大数据计算应用作业的。</p>
+<h4 id="mapreduce作业启动和运行机制">MapReduce作业启动和运行机制</h4>
+<p>我们以Hadoop1为例，MapReduce运行过程涉及以下几类关键进程：</p>
+<ul>
+<li>
+<p>大数据应用进程：启动用户MapReduce程序的主入口，主要指定Map和Reduce类、输入输出文件路径等，并提交作业给Hadoop集群。</p>
+</li>
+<li>
+<p>JobTracker进程：根据要处理的输入数据量启动相应数量的map和reduce进程任务，并管理整个作业生命周期的任务调度和监控。JobTracker进程在整个Hadoop集群全局唯一。</p>
+</li>
+<li>
+<p>TaskTracker进程：负责启动和管理map进程以及reduce进程。因为需要每个数据块都有对应的map函数，TaskTracker进程通常和HDFS的DataNode进程启动在同一个服务器，也就是说，Hadoop集群中绝大多数服务器同时运行DataNode进程和TaskTacker进程。</p>
+</li>
+</ul>
+<p>如下图所示。</p>
+<figure data-type="image" tabindex="3"><img src="MapReduce%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%92%8C%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86.resources/011912DD-397C-4C64-B978-F932E333E232.png" alt="56113971e19e97cdacc9f4b4f9993b76" loading="lazy"></figure>
+<p>具体作业启动和计算过程如下：</p>
+<ul>
+<li>应用进程将用户作业jar包存储在HDFS中，将来这些jar包会分发给Hadoop集群中的服务器执行MapReduce计算。</li>
+<li>应用程序提交job作业给JobTracker。</li>
+<li>JobTacker根据作业调度策略创建JobInProcess树，每个作业都会有一个自己的JobInProcess树。</li>
+<li>JobInProcess根据输入数据分片数目（通常情况就是数据块的数目）和设置的reduce数目创建相应数量的TaskInProcess。</li>
+<li>TaskTracker进程和JobTracker进程进行定时通信。</li>
+<li>如果TaskTracker有空闲的计算资源（空闲CPU核），JobTracker就会给他分配任务。分配任务的时候会根据TaskTracker的服务器名字匹配在同一台机器上的数据块计算任务给它，使启动的计算任务正好处理本机上的数据。</li>
+<li>TaskRunner收到任务后根据任务类型（map还是reduce），任务参数（作业jar包路径，输入数据文件路径，要处理的数据在文件中的起始位置和偏移量，数据块多个备份的DataNode主机名等）启动相应的map或者reduce进程。</li>
+<li>map或者reduce程序启动后，检查本地是否有要执行任务的jar包文件，如果没有，就去HDFS上下载，然后加载map或者reduce代码开始执行。</li>
+<li>如果是map进程，从HDFS读取数据（通常要读取的数据块正好存储在本机）。如果是reduce进程，将结果数据写出到HDFS。</li>
+</ul>
+<p>通过以上过程，MapReduce可以将大数据作业计算任务分布在整个Hadoop集群中运行，每个map计算任务要处理的数据通常都能从本地磁盘上读取到。而用户要做的仅仅是编写一个map函数和一个reduce函数就可以了，根本不用关心这两个函数是如何被分布启动到集群上的，数据块又是如何分配给计算任务的。这一切都由MapReduce计算框架完成。</p>
+<h4 id="mapreduce数据合并与连接机制">MapReduce数据合并与连接机制</h4>
+<p>在WordCount例子中，要统计相同单词在所有输入数据中出现的次数，而一个map只能处理一部分数据，一个热门单词几乎会出现在所有的map中，这些单词必须要合并到一起进行统计才能得到正确的结果。</p>
+<p>事实上，几乎所有的大数据计算场景都需要处理数据关联的问题，简单如WordCount只要对key进行合并就可以了，复杂如数据库的join操作，需要对两种类型（或者更多类型）的数据根据key进行连接。</p>
+<p>MapReduce计算框架处理数据合并与连接的操作就在map输出与reduce输入之间，这个过程有个专门的词汇来描述，叫做shuffle。</p>
+<h4 id="mapreduce-shuffle过程">MapReduce shuffle过程</h4>
+<p>每个map任务的计算结果都会写入到本地文件系统，等map任务快要计算完成的时候，MapReduce计算框架会启动shuffle过程，在map端调用一个Partitioner接口，对map产生的每个&lt;key , value&gt;进行reduce分区选择，然后通过http通信发送给对应的reduce进程。这样不管map位于哪个服务器节点，相同的key一定会被发送给相同的reduce进程。reduce端对收到的&lt;key , value&gt;进行排序和合并，相同的key放在一起，组成一个&lt;key , value集合&gt;传递给reduce执行。</p>
+<p>MapReduce框架缺省的Partitioner用key的哈希值对reduce任务数量取模，相同的key一定会落在相同的reduce任务id上，实现上，这样的Partitioner代码只需要一行，如下所示。</p>
+<pre><code>/** Use {@link Object#hashCode()} to partition. */ 
+public int getPartition(K2 key, V2 value, int numReduceTasks) { 
+return (key.hashCode() &amp; Integer.MAX_VALUE) % numReduceTasks; 
+}
+</code></pre>
+<p>shuffle是大数据计算过程中发生奇迹的地方，不管是MapReduce还是Spark，只要是大数据批处理计算，一定会有shuffle过程，让数据关联起来，数据的内在关系和价值才会呈现出来。不理解shuffle，就会在map和reduce编程中产生困惑，不知道该如何正确设计map的输出和reduce的输入。shuffle也是整个MapReduce过程中最难最消耗性能的地方，在MapReduce早期代码中，一半代码都是关于shuffle处理的。</p>
+<figure data-type="image" tabindex="4"><img src="MapReduce%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%92%8C%E8%AE%A1%E7%AE%97%E6%A1%86%E6%9E%B6%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86.resources/8DB07269-807E-435E-B65D-3A0A16E05D07.png" alt="e0eb09bb5187517b530feb90ab55f767" loading="lazy"></figure>
+
+            </div>
+            <hr style="width: 80%;">
+            
+            <div class="postfooter">
+                <ul class="post-copyright">
+                    <li><strong>文章作者：</strong></li>
+            <li><strong>原文链接：</strong>https://xuetongyao.github.io/post/mapreduce/</li>
+            <li><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用<i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA
+                许可协议。转载请注明出处！</li>
+            </ul>
+        </div>
+        
+            <div class="shareContainer">
+                <div class="share" style="height:30px;">
+                    <a class="qq" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/qqs.png" alt=""></i></a>
+                    <a class="wechat" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/wechats.png" alt=""></i></a>
+                    <a class="weibo" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/weibos.png" alt=""></i></a>
+                    <a class="qzone" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/qzones.png" alt=""></i></a>
+                    <a class="douban" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/doubans.png" alt=""></i></a>
+                    <a class="facebook" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/facebooks.png" alt=""></i></a>
+                    <a class="twitter" href=""><i><img class="shareicon"
+                                src="https://xuetongyao.github.io/media/images/twitter.png" alt=""></i></a>
+                </div>
+            </div>
+            
+        <div id="otherpost">
+            
+            <a  data-pjax class="prev-post-pc" href="https://xuetongyao.github.io/post/hashmap/"  style="color: black;">
+                <div id="ppcontainer">
+                    
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5-Q0QJB5L7d_ZNDC-wGMWAqSy0Sn0Z4i0dQ&amp;usqp=CAU" style="width: 100%;" class="opimg">
+                    
+                    <h4 class="optitle">HashMap</h4>
+                </div>
+            </a>
+            <div class="prev-post">
+                上一篇 <a  data-pjax href="https://xuetongyao.github.io/post/hashmap/">HashMap</a>
+            </div>
+            
+            
+            <a data-pjax class="next-post-pc" href="https://xuetongyao.github.io/post/jvm/"  style="color: black;">
+                <div id="npcontainer">
+                    
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEBUSExASFRUWFxIVFxgYDQ8ZGBUVFRgWFhYXFRUYHSggGBolGxUVIjEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0rLS0tLS0tKy0tLS0tLS0tLS0tLS8tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAcAAABBAMBAAAAAAAAAAAAAAAAAQIGBwMFCAT/xABLEAABAwIBBgcLCAkEAwEAAAABAAIDBBESBQcTITFRBkFhcYGRsSIyNVNydKGisrPRFBU0c4KSk8EIJDNCQ1Jiw+Elg8LwJmPTFv/EABoBAQADAQEBAAAAAAAAAAAAAAABAgMEBQb/xAA2EQACAQIDBAgFAwQDAAAAAAAAAQIRMQMSIQRBUWETIjJxgZGh8AUUQrHRUpLhI2LB8RVTov/aAAwDAQACEQMRAD8ArVCRC6DjFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgFQkQgBCRCEioSIQCoSIQCoHImrd8F8nGSUPI7hhvzu4h+azxcRYUHOW422bZ5bRixwoXfpxfgaurhLHuYdrTY86xL1ZXkDqiQjYXntXkU4bbgm70X2K40YxxZKNk3TuroKhIhXMxUJEIBUJEIALhvHWk0g3jrCu/MfTMfk+UujY4/KHi5Y0m2jj3qxfm6HxMX4TPgqOdGaLDqq1OTA4HjHWgvG8dauvPnTMZQwFsbGn5Q0XDGjVopdWpYcxbo5KWoiexjnRyteLsaSGyMAG0bLxuU5tKkZOtlKZ0g3jrCUOB2FdZ/N0PiYvwmfBVRn4ya1raSVjGtGKaN2FoFy4Mc29vId1qFOrJlh0VSpEhcBtI60K5MxOTGOpqmZ8bXYpmxjEwHVGwO1X5ZSrN0RSKzOhTWkG8dYShwPGOtdZ/N0PiYvwmfBVJn2lYw0sDGMbfSyuwsaDqwsZs539Sqp1dC8sOiqVOXjeOtJpBvHWFfeZqkjdkppdGxx0s2ssaT328hTn5uh8TF+Ez4I50YWHVVqcl6Qbx1hOXWXzdD4mL8JnwXK2VqXRVE0Pi5Zo+iN7mjsUxlUiUMp5khcBtI60ivPMnktnzc6V8bXGSaQguY09ywNj1X4rtcpboiIxzOhRmkG8dYRpBvHWF1p83Q+Ji/CZ8EfN8PiYvwmfBU6Qv0XM5NQnz9+7yndpWNaGQqEiEAiEiEJoKhIhBQVCRZqSmdI8MYLk+gbzyKHJJVZKi5OkdWzNk2hdNIGN5yf5eVS/KMzKWmszUbYW7y48Z9JWWjpo6WEkkADW5x2uP/dgUOyvlJ08mI3A/dbuHxK8mr2zFX/XH19+ivc+jyx+FbO6v+tNftX8er5JHhCFs6bIUrm4nARt2lzzbVzbVr5gA4gOxAcdrX6F6ccWEm1F1pc+fns+JhQUpxaTtXSvhenOwxCRC0M6CoSIQUFQkQgoXtmI8Hy+cP8AdxKyVW2YfwfL5w/3cSslYSudEOyis8/f0CDzlvuplFsxNbhr5oeKWDF9qJ7bDqkf1KU5+/oEHnLfdTKs82dbosrUrr2DnmM8ulY5gH3nN6lddkzl2zphV9nwpMeSw/xU8L/vYov7qsFRnORS6TJVW217ROk6YrSD2FRXNZWOZ10RmfpNHkiEka5HTSHmdI4N9VrVzq51hddVcFaLQ0NND/JDC084YL+m60nYxwrm2XPGeSu0mVnt4oY4YuS9jKbfi26F0OuU+E9dp62pmvcPmlI8nEQz1QFWFy+Jahd+ZPwS362f2lPVAsyfglv1s/tKeqsrlo2QLmrOhSaPK9ULanOZIOUPYwk/exLpVUTn2pMOUIpfGQAdMb3X9D2q0LlcRaFbrpnNzR6LJVI22sxNkPPLeQ+0uZ2RF5DGi7nENbyucbD0ldb00AjjaxuxjWtHM0ADsU4hXCWrMyEIWZsciVHfu8p3aUxPqO/d5Tu0rGug5KCoSIQmgiEIUAEIQgHwxF7g1ou4mwCm1JTR0cJc890e+PG48TW8i8fA2iGF0xGtxLW8gG3rPYtVwprC+ct/dZ3IHLxleZjSe043QJ0iu1z5etPM97ZoR2HZVtclWctIVsk9/itfJVVWxlXWy1coaBtPctB1Dl6uNSKnooaOPSPs5+8gXJ3MHEvJwJphhfLx3wDmGs9oXg4YzE1GA7GtFudwuSqT/q43y0NIq9N/L33muFXZ9l+exetiSfVru4ei8LI8eVcsSTnWbN4mg6uneVrroQvUhCMI5YqiPAxcWeLNzxHVvewQhCsZghCEAIQhAXvmH8HS+cP93ErJVbZh/B0vnD/dxKyVlK50R7KKyz+fQIPOW+6mVJUVUYpY5RtjeyQc7HB35K7c/n0CDzlvuplRZV4WMcTtHX0bw5ocNhAI5jrCw5RpxJDJGdj2PZ95pH5rUcAq7TZMpJCbkwxtPlMGB3paVIFkdFanJWSaMyTwwka3yxRkeU8NPaV1pZc98Gclf+SiG2qOqqX8zY9I9v8AxXQqvNmeGqVNZwkrtBR1E3i4pXjnDSR6bLlFuxdD55q7R5JkbexlfFEOXusbh91jlzyphYriXOgsyXglv1s/tKfKA5kvBLfrZ/aU+VJXNI2R48kVomp4phsljjkHM9od+arPP9SXhpZrd7JJH0SNDv7alOamt0uSKY8bA+L8N7mN9UNXlzzUmPJMjuON8Mnrhh9DypWjIlrEpXgJR6bKlJH/AO5j+cRXlI6oyuo1z9mRo8eVMdtUUMrr7nOLYx6HP6l0CpncjDsealqQ90gH8N+D1GP/AOa9Ki/ASt00dVJvrato8ljgxp6mhShUNEch1Hfu8p3aVjT6jv3eU7tKYtzlBCEIBqEIQAhCEBLuBdcMLoSdYJc3lB29R7VpuEtOWVL9zu6HMf8AN1rYJnMcHNNiDcFSiuc2sp8bRaaLa3eOO28HaF58odBtHS/TLR8nu8K0Pbhi/ObH8v8AXDWP9yV0uaVe+nll4EzgxvZxtdi6CLfksPDWi72YD+h3/E9oWiyNlAwzNfxfvcrTt+KnmVIw6GQHWCxx6hcFc20V2fa1iKz/ANP8+R3bE47b8OeA7xX21i/8PxK2QkaUq9k+WTqqghCEAIQhACEIQF8ZhvB0vnD/AHcSspVrmF8HS+cP93ErKWMrnRCyKxz+/QIPOW+6mVFq9M/v0CDzlvuplRa0hYyxLl+5jq3Hkwx8cM0rOh+GUdF5D1KxVS/6P9daWrgJ75sUrR5Jcx59aNXQs5XNYPQrXIeScPCislt3IgY8eVKIm/25FZS1tPk0NrJanjlip4rbtC6d1+nSj7q2SN1JSoU9+kBW6qSnG+aY8mENYz25OpU8p1nortJlZ7QdUMUMXJexlPvQOhQVaxsYTudCZkvBLfrZ/aU+UBzJeCW/Wz+0p47YVlK7N42RWGYKtxUU8Xi5sQ8mRjfza5TbhpR6bJ1VGBcugmwj+oNJb6QFU+YCutVzw3/aQseByxOsfeq8HtBBB1g6jzFTK5WGsSof0fqPVVz7zDEOgOe72mq2MoVQihkldsjY955mNLj2KG5nckmnyc5h741FSCbbdE8wf2lsc6FZoskVZ/mj0X4xEXY8pLVkx0iafMc4nJV3G7jPMSd5OEk9asJV5mN8Fn6+bsYrDUSuxCyOQajv3eU7tKxrJUHu3eU7tKxrY5wQhCAEJEXUEmSCFzzZrST/AN2r2zZJcxhe97Rbi1m53LZUGU4A0NHcchH5p9bRMmIdptW4FpHOu+OzwyVTzPvojleLLNroiNLLRVb4nh7DYjqI3EcYW3+YWeNPU1HzLENsp62LF7FiNUaXmjaO0xjJSi3Vd+hpaqQOc5waG3JNr3AvuUtyllqNtKI2PD3uYGauLVYkrWHJlONsx/Ej+CwvpaUfxX9Dgf8AisMX4bny5murur+dTq2b4nLAWJkWs1Rulu5W3+BqUL1ziADuDMTy4Ldi8aSjld0+454uqPVSUofq0jWncQ7tTKyjfGbOHMRsKwxgkgDbcW51KsrRgwOxbQAb8oXRhYSxISa0a9TOc3CS4MiqEiFymwqEiEBfGYTwdL5w/wB3ErLVbZh2EZNkO+okt0MjH5KyVlK5vDsorHP79Ag85b7qZUWrzz/n9Qg85b7qZUWtI2Mp9om2Zut0eV4h41k0XW3SD0xBdGrk7gvXaGupptmCaEnycQDvVJXWKrO5fDsCELW8I6/QUdRP4uKV/S1pI9NlQ0OY+Fddp6+pmvcPmlI8kOLWeqAtWmt2JVsc1zoTMj4Jb9bP7SnknenmKgeZHwS362f2lO5e9dzHsWTudEbI5tzRVuiytTbpNJEftMcR6zWrpZci5BrdDUU817CKWGQnkY9rnegFddK07lMKxgpoGxtwtFgXPd9qRznuPS5xPSq7z8VmHJ0cXjZ2X8ljXPPpDVZapT9ICsvPSw371kshHlua1vsOVY3LTsSfMWf9LP183YxWIq5zEn/THecS+zGrGSV2TGyOQKjv3eU7tKYnVHfu8p3aUxbHOKhIhQBEIQgBbKHIznxh7HtNxssRbkutavTRV74j3J1cYOwrTDyV660+xWeanVZlfkmYfuE8zgmHJkvindQWxZwh3x9Tk/8A/Qt8W7rC6Oi2Z/V78jHPjfp9+Zqhk2XxTupL81zeLd6FsncIt0fW/wDwsEnCB52NaOsqHDZ19T9+BKlivcvfia6alezW5jgOULEs1VWySd84kbtg6lhBXPLLXq18TaNd5u8jUIaNNJqA1tv7RXmytlIyHC3UwenlK8lXWvk746hsA1AdCwLWeMsvRwtv4szjhuuaV/sCEIXOaiOdYE7tasShzO5QeRjkpo2mxvpZHkA/0hov1hVxP3juY9i7Dpf2bfJb2BVk2i8Ip3NXwWyFHRUkdNGS4MBu4jW97iXOcRxXJOriFgtyheDKuVIaaJ008rY427XOdbmAG0k8QGsrM2sVh+kFVjR0kN9ZfLKeZjQwe8PUqZUg4e8JTlCtfPYiMARxNO0RtuQSN5JJPOBxKPrWKojCTqxHDUutOD1cJ6SCYfxIon/eaCe1cmLo7M7W6XI8AO2MyxHma92H1S1ROxbDuTZQXPPXaLJErQbGV8UQ5buD3D7jHKdKnv0g67uaSnHGZpjyFoaxnvH9SpG5eVinEIQtTA6FzI+CW/Wz+0p1U947yXdiguZDwQ362f2lOav9m/yXdhWTudEbI49aLttvH5LrLgrXaehppjtkhhcfKLBiHXdcnx96OYLo3M1WaTJEIvrjdNEeh5c31XNV5meHcnK5yzy1ekyvKL/smQxerpD71dGrlHhhWabKNXJ/NPMB5LXljfVaFWBbEsXNmHP+mP8AOJPYjVkKtsw3g2TziT2I1ZKiV2WjZHH1R37vKd2lMT6jv3eU7tKYtjnBCEKAIkWaipHSuwt5yTsAUjpMixsF3DGeXZ0Bb4OzzxdVYznixho7kWXqybHG59pXEC2rXYX5TxLNlWsc84cBY0bBht0la5ZvLCemvei1HKOuhLGZGgtqbf7ZQciw/wAh+85RiKoc3vXOHMSvS3K0w/iHqC647Tg74fZmDwsTdL7m8OQ4dzh9srG/g/HxOeOorUHLE3jPVb8FhlyhK7bI7rt2I8fZ6dj35krDxf1D8pUYicAHh1+sc68qaNazx0sjtkbz9grjbzOsV4LU3SotWYUq2EWSSBimcI284xHmC1x26timUJQ7SoFJSsKhNQqFhXC4spa3OZlUAAVxsNX0aj/+ajFJSukxWsA1rnuNzYNbzDbxL0nI8ujMtm4Q0ONpoiQ022tBvxqksSCdG0bQ2fGlHNCLa5Ktjdy5yMquFjXv6IKVvpbGCo7lDKE078c80srtdnSSveRfaG4j3I5AvLdF1ehhnrvHoTLrPSU7pHhjBdztQFwLm19p5kboqsmKzvLHVmNZI53tFmve0bg9wHUClpaR8jxG0Xcb6rgbLk3J2WsUk8OENONhxAmzX3LbG1nDiKjMq0LLDk4udNFv8vyvMX5ZJ42T8V/xWOSVztbnOdzuJ7U6KFzg4tFwwXcdWobNaxXUlaaJ8RyEy69NBSOmdgaReznaybWaLnYCok1FVdiYRc5KMdW7IZHUPaLNkeBuEjgOoFO+VyeNk/Ff8UlJTuke1jBdztguBxE7TyBHyd+k0WE48WDD/Ve1v8pmSdK/64kqEmlJJ0bpbfw7+RjWSOd7RZr3tG4PcPQCkq4HRvLHizm6iLg8V9o51hupTqqorJZW4y0auj0fLJPGyfiv+KwrNQUrpZGxsIxOJAuTbUCdZF9y84eldae/ejDVIqW519KV8qrzM8c72izXvaNwe4DqBS/LJPGyfiv+KbVQ4HYcbHagbsfcaxe194WEFE6qqE1kk4yuh6Ey69FVSOYGE2Ie0OaQTa2wjnB2hQ2k6MRi5JyVlfx0+5iQmoUgdDM5hu0kHeFs4cvyDaGu6LH0LUXRdaQxZw7LKyhGV0SEcIWnvovWB7Qm/ONK7voSP9tv5FaC6yQy4TfC08jhcdS1W1Yn1UfejPoIbvub3T0R/dH3HpNNRbh9yReKPLJH8GH7llmGX3eKj9K16aG/L+x/kzyS5/u/g9HyqjGyO/8AtH80gyjAO9pif9tv+V5zwgfxRxdR+KQ5fl/lYPsn4q3zEd0l+z+R0cuH/o9gym/9ylI6D8Ex0lY/Y3CPsjtK8TsuTH94DmaF535TmO2R3RYdio9oT+qXoiVhPgvVmxORXnuppgOkn0my8FdHE3VG9zzxmwt0b15nyE7STzklY7rnlODVIxpzbqzWMZb3+BUJLousjQ2uTPo1Xbbhg+6H91+S9dHQSQwVRkYWAsY0E2s4lzbBpG3oWmpatzCS23dNcwgi4LXbQQmGVxAaSSBsBJsOYcSwlhyba3Np+WX8c78te2GPhxjFtNyjGUVw62fV6Ouk3w7O+ukxo6cg6B4kezRXNqOIQ62XBEt8Rds1714aANfHFVuA/V2PbINXdOZrh6SXDqUdFS8ADG6w2DEbDmF9SYHmxFzY2uLmxtsuFjHZGq1d+CppRp+dfTedU/icXSkNFxlXWsXF67k13NNrQlmSGyDQ30jxKS5wjo4jHZzyHCWQ69/Mo5UnR1DizVgkOHkwuNuxYWzOAsCQL3sHOAvvtvWMu4ytcPBcZyk2nXdSm/2vM59p2xYuFDDimnHWrbbturz1uSjKAbG2aqbf9Za1sf8ASZP23NbCetOyawaTJ+oa2T31DX321RYvNgLmwvYXNhfbYcScJnau6OrZ3R1X28yp8t1aV468srivKteevE0/5BdIp5dNHSu/pFiSfi1RcNFZEhyNXySMqMLRiEbQxjYWGwDtgbbWADxrDV0MstNBgjLnNfUh9mgYXOeCMQ/dGo8gWjjkLTdpIO8Eg9YSiVwBAJAO2xOvn3q3QZZ5oUWtbcmqXtrXvM/nM+F0eLmejTdb9ZTTWj1qku63AldXE4VdVI0kYBALR07JXnE1utgdqGzWeVZTGBVRnC4OdTyOdeNrXE4Xi7mt1B1tqiAqHA4w84t+J1+vajTO23N7Ed87UDtHMsnsj/V9NLf207+Z1L4pBVeR6zcrunbzWstOrp361othwTH65Dzv9hy9vyxuh+WYhp9HorasWlth0t/I9Kj7HkG4JBHGCQR0hNW+JgKc8z5Lw1qu519DhwNrlg4PRxW9tPg6RUZLnGjp38iXVET21VXI0v7gxC0dOySTugNbQ7YNWsp8tP8ArAcIrzGlxsa+Jgc6UEi7mDVjtxKJiocDiDyHHacbrnnO1NMhJBLtY2d0dXNuWD2ST+rclbkl/i3Oh3L4pCKaUHrJy1loqyb0qmk1W6W6utaElyU6odV0xmZh1ygExNY53cm97AXsvK2tM9JUhzWARiEx4Y2jBd+EgEcVlpjUOxY8Zxb8br9e1MDyAQCbHaLmxtvHGtlgLMpaaUpRUpSTfrWnuhyvbZZXBOTTz1zOreaCiq6fTSu/drXUlsvc1E7sLThpWOALQRcCPaFgglE8dO+cNP6wYy7C1t2YcQa7DqtewUbMrtes6xY6zrG47xyJuI2tc222ubX323rNbJRX1015ZaG8vilZPqVjro3o25ZlXTdb10sSbKzzopRLHMbEBjjQwxtidi1Brw7W0jVxrV1v0OmvtxVNvJxN/O6175nEAFxIGwEk25r7E+pqnPwg2sxoY0AWAA/O52q+HguCS514bqGO0bZHGcnRqsVFVbf1qWrfdRLw0SSMKEl0XXSeeCE26LqAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAOQm3RdAIhCEJBCEIAQhCAEIQgBCEIAQhCAEIQgBCEIAQhCAEIQgBCEIAQhCAEIQgBCEIAQhCAEIQgBCEIAQhCAEIQgP/Z" style="width: 100%;" class="opimg">
+                    
+                    <h4 class="optitle">JVM</h4>
+                </div>
+            </a>
+            <div class="next-post">
+                下一篇 <a  data-pjax href="https://xuetongyao.github.io/post/jvm/">JVM</a>
+            </div>
+            
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- 弹窗 -->
+    <div id="myModal" class="modal">
+        <img class="modal-content" id="img01">
+    </div>
+</body>
+<script>
+    //文章阅读热度
+    var pl = $("#pl").html();
+    var rootaddr = $("#rootaddr").html();
+    pl = pl.replace(rootaddr, "");
+    $("#hotnum").attr('id', pl);
+</script>
+                    <div class="toc-container">
+                        <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#mapreduce%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B">MapReduce编程模型</a></li>
+<li><a href="#mapreduce%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B">MapReduce计算过程</a>
+<ul>
+<li><a href="#mapreduce%E4%BD%9C%E4%B8%9A%E5%90%AF%E5%8A%A8%E5%92%8C%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6">MapReduce作业启动和运行机制</a></li>
+<li><a href="#mapreduce%E6%95%B0%E6%8D%AE%E5%90%88%E5%B9%B6%E4%B8%8E%E8%BF%9E%E6%8E%A5%E6%9C%BA%E5%88%B6">MapReduce数据合并与连接机制</a></li>
+<li><a href="#mapreduce-shuffle%E8%BF%87%E7%A8%8B">MapReduce shuffle过程</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                    <div class="tog">
+                        <div class="toggleContainer">
+                            <div class="toggle">
+                                <i class="fas fa-angle-double-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!---------------------------- 评论系统👇 ------------------------->
+                    <div id="comment" class="comment">
+                        <div class="commentcontainer">
+                            
+                                
+                            
+                        </div>
+                    </div>
+                    <!---------------------------- 评论系统👆 ------------------------->
+                </div>
+                <!-- main标签，pjax渲染时加载以上内容👆 -->
+                <div class="col-md-1 col-lg-2"></div>
+                <div id="bg">
+                </div>
+            </div>
+            <!-- ----------------左侧菜单栏html 👆-------------------------------------->
+            
+        </div>
+        <!-- aplayer播放器加载👇 -->
+            
+            <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+</head>
+
+<body>
+    <div class="miniMode">
+        <meting-js id="myaplayer" server="netease" type="playlist" fixed="true" order="default" muted="muted">
+        </meting-js>
+    </div>
+</body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script>
+    function aplayerInit() {
+        var aplayerid = "228374769";
+        var aplayerserver = "netease";
+        var aplayerorder = "random";
+        var aplayerautoplay = "true";
+        var aplayer = $("#myaplayer");
+        aplayer.attr("server", aplayerserver);
+        aplayer.attr("id", aplayerid);
+        aplayer.attr("order", aplayerorder);
+        if (aplayerautoplay == "true")
+            aplayer.attr("autoplay", "true");
+    }
+    aplayerInit();
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/Aplayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+<script>
+    function aplayerbtnInit() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        if(player==undefined)return false;
+        player.lrc.hide();
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == false) {
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+
+    function aplayerPlay() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == true) {
+            player.play();
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            player.pause();
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+</script>
+            
+        <!-- aplayer播放器加载👆 -->
+    </div>
+    <!-- 背景图加载方式👇 -->
+    <div id="bgchoice" style="display: none">link
+                </div>
+                
+                <div id="bgurl" style="display:none">https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUyGl4FHNpVjeTeKracxQDllffgL0zyiRMVA&amp;usqp=CAU</div>
+                
+    <!-- 背景图加载方式👆 -->
+</body>
+
+<script>
+    //初始化
+    //更换twikoo头像
+    setTimeout(replaceAvatar,1000);
+    setTimeout(replaceAvatar,2000);
+    setTimeout(replaceAvatar,8000);
+    // --------为每张图片添加懒加载（lazyload）标签-->懒加载功能 👇------------
+    lazyload();
+    //为文章内所有代码块添加代码复制功能 👇
+    codeinit();
+    // ------代码高亮显示功能-------------
+    hljs.initHighlightingOnLoad();
+    if (shareChoice)
+        shareInit();
+    if (donateChoice)
+        donateInit();
+</script>
+
+<!------------------ 加载live2d模型功能（看板娘）👇 ---------------->
+
+<!------------------ 加载live2d模型功能（看板娘）👆 ---------------->
+
+
+<!----------------------- 返回顶部按钮功能👇 --------------------->
+<script>
+    $(function () {
+        $('.toggleContainer').click(function () {
+            $('html,body').animate({
+                scrollTop: '0px'
+            }, 800);
+        });
+        $(window).scroll(function () {
+            var st = $(window).scrollTop();
+            if (st > 30) {
+                $(".toggleContainer").fadeIn(400);
+            } else {
+                $(".toggleContainer").fadeOut(100);
+            }
+        });
+    });
+</script>
+<!----------------------- 返回顶部按钮功能👆 --------------------->
+
+
+<!------------ 加载全局背景图功能👇（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+<script>
+    var bgchoice = "link"
+    var bg = $('#bg');
+    var bgurl = document.getElementById("bgurl").innerHTML;
+    if (bgchoice == 'default')
+    {
+        for (var i = 0; i < 3; i++)
+            bgurl = bgurl.replace("\\", "/");
+        bgurl = "https://xuetongyao.github.io/" + bgurl;
+    }
+    bg.css("background", "url('" + bgurl + "')");
+
+    window.onload = function () {
+        aplayerbtnInit();
+    }
+</script>
+<!------------ 加载全局背景图功能👆（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+
+
+
+
+<script src="https://xuetongyao.github.io/media/js/index.js"></script>
+
+
+<script>
+    //加载后的事件同步（阅读量、移动端评论等
+    window.onload = function () {
+    //代码块高亮渲染
+    document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+    });
+        getHotnum();
+        var sharepc = $(".share").eq(0).html();
+        $(".share").eq(1).html(sharepc);   //插件只会寻找一个分享标签渲染，所以需要手动添加到移动端
+        aplayerbtnInit();
+        $(".hljs").css({
+            "padding": "20px"
+        })
+    }
+</script>
+
+<!-- <script src="https://xuetongyao.github.io/media/js/av-min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@3.13.0/dist/av-min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.6.1/dist/av-live-query-min.js"></script> -->

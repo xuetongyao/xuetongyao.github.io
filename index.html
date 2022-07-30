@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    <script src="https://xuetongyao.github.io/media/js/valine.min.js"></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <meta name="description" content="距离之所以可怕，因为根本不知道对方是把你想念，还是把你忘记" />
+    <meta http-equiv="x-pjax-version" content="v123">
+    <title>tongyao's blog</title>
+</head>
+
+
+<body>
+    <div id="content">
+        <div class="nav-large">
+            <div class="row">
+                <!-- ----------------左侧菜单栏html 👇-------------------------------------->
+                
+                <!--------------- pc端菜单栏👇 ---------------->
+                <div class="side"><head>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://xuetongyao.github.io/styles/main.css">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/rainbow.min.css">
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/clipboard.min.js"></script>
+    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- fancybox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+    <!--------- 数学公式👇---- -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css"
+        integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js"
+        integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js"
+        integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous">
+    </script>
+    <script>
+        renderMathInElement(document.body, {
+            delimiters: [{
+                    left: "$$",
+                    right: "$$",
+                    display: true
+                },
+                {
+                    left: "$",
+                    right: "$",
+                    display: false
+                }
+            ]
+        });
+    </script>
+    
+    <!--------- 数学公式👆----------------- -->
+    <!--------- daovocie功能👇 ------------------->
+    
+    <!--------- daovocie功能👆 ------------------->
+    <!-- -----------------twikoo评论系统引入👇 --------->
+    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js"></script>
+    <!-- -----------------twikoo评论系统引入👆 --------->
+    <!---------------- leancloud api 功能依赖引入👇 -------->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@3.13.0/dist/av-min.js"></script>
+    <!---------------- leancloud api 功能依赖引入👆 -------->
+    <!------------------ valine评论系统引入👇 ------------------>
+    <script src="https://xuetongyao.github.io/media/js/valine.min.js"></script>
+    <!------------------ valine评论系统引入👆 ------------------>
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <!---------------- 今日诗词api功能依赖👆 ----------------------->
+    <!---------------- 今日诗词api功能依赖👇 ----------------------->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ispeak-bber/ispeak-bber.min.js" charset="utf-8"></script>
+    <!---------------- 哔哔功能依赖👆 ----------------------->
+
+
+</head>
+
+<style>
+    body {
+        overflow-x: hidden;
+        height: 100vh;
+        overflow-y: scroll;
+        cursor: url("https://xuetongyao.github.io/media/images/mouse_cursor.png"), auto
+    }
+</style>
+
+<body>
+    <!--=------ 页面加载动态画面👇 --------------->
+    <div class="pjaxloading" onclick="pjaxloadingClose()">
+        <div class="loadingbackground"></div>
+        <div id="loading-aname">
+            <div class="loading-aname">
+            </div>
+        </div>
+    </div>
+    <!--=------ 页面加载动态画面👆 --------------->
+
+    <!--------------- 左侧菜单栏👇 ------------------------>
+    
+    <div id=side>
+        <div class="r_m_div">
+            <a onclick="showAaplayer()"><i style="font-size: 20px;"><img
+                        src='https://xuetongyao.github.io/media/images/music.png' alt="音乐播放器" class="musicbtn"></i></a>
+        </div>
+        <div class="avatar-border">
+            <img src="https://xuetongyao.github.io/images/avatar.png?v=1659154940236" class="avatar">
+        </div>
+        <div class="sitename">tongyao&#39;s blog</div>
+        <span class="description" data-text='["距离之所以可怕，因为根本不知道对方是把你想念，还是把你忘记"]'>&nbsp;</span>
+        <div class="siteinfocontainer">
+            <span class="siteinfo">文章</span>
+            <span class="siteinfo">标签</span>
+        </div>
+        <div class="siteinfocontainer">
+            <span class="siteinfo" id="siteinfo-postsnum"></span>
+            <span class="siteinfo">8</span>
+        </div>
+        
+        <div class="search">
+            <!-- <input type="text" class="search-input" placeholder="标题搜索(●'◡'●)" /> -->
+            <input type="text" class="search-input" placeholder="标题搜索 ⚆_⚆ つ♡">
+            <div class="search-results"></div>
+        </div>
+        
+    <div class="share-button">
+        <span>find me here!!</span>
+        
+        <a href="https://github.com/xuetongyao" target="_blank"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/github.png" alt=""></i></a>
+        
+        
+        <a onclick="showqq()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/QQ.png" alt=""></i></a>
+        
+        
+        
+        
+        <a onclick="showWechat()"><i style="font-size: 20px;"><img class="icon"
+                    src="https://xuetongyao.github.io/media/images/wechat.png" alt=""></i></a>
+        
+        
+        
+        
+    </div>
+    <div id="qq" style="display:none">815146666</div>
+    <!------------ 加载菜单按钮👇 ------------------------->
+    <div class="menucontainer">
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="首页"></i>&nbsp;<span
+                    data-text="首页">首页</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/archives" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="归档"></i>&nbsp;<span
+                    data-text="归档">归档</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/tags" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="标签"></i>&nbsp;<span
+                    data-text="标签">标签</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="/post/about" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="关于"></i>&nbsp;<span
+                    data-text="关于">关于</span>
+            </a>
+        </div>
+        
+        
+
+        
+        
+        
+        <div class="mchocie description">
+            <a data-pjax href="https://xuetongyao.github.io/friends" class="menubutton" style="margin-right: 15px;">
+                <i><img class="icon menuicon" src="" alt="友人帐"></i>&nbsp;<span data-text="友人帐">友人帐</span>
+            </a>
+        </div>
+        
+        <!--  -->
+    </div>
+    <!------------ 加载菜单按钮👆 ------------------------->
+    <hr>
+    <style>
+    .copyright {
+        font-size: 15px;
+        color: #d9d9d9;
+    }
+
+
+    @media screen and (min-width: 1200px) {
+        .foot {
+            width: 100%;
+            height: 130px;
+        }
+    }
+
+    @media screen and (max-width: 1200px) {
+        .foot {
+            display: none;
+        }
+    }
+</style>
+
+<body>
+    <div class="foot">
+        <div id="footinfo"> | Theme: <a
+                href="https://github.com/850552586/gridea-theme-fog">Fog</a>
+            <div>
+                
+            </div>
+            <div>
+                
+            </div>
+            <div class="copyright" style="color:white;text-align: center;">备案号: 沪ICP备2022004414号
+            </div>
+        </div>
+
+
+
+    </div>
+</body>
+
+    </div>
+
+    <img class="moon" src="https://xuetongyao.github.io/media/images/moon.png" onclick="moonlight()">
+    <script src="https://xuetongyao.github.io/media/js/wordshow.js"></script>
+    
+    <!--------------- 左侧菜单栏👆 ------------------------>
+
+    <!----------------- 顶部菜单栏👇 ------------------------>
+    
+    <!----------------- 顶部菜单栏👆 ------------------------>
+
+<!--核心功能加载-->
+<script src="https://xuetongyao.github.io/media/js/mainfunc.js"></script>
+
+<!------------- Fog1.0版本彩蛋👇 -------------->
+    <!-- <section id="terrestrial" class="popup">
+        <a href="#" class="back">&lt; back</a>
+    </section>
+
+    <div class="flycontainer">
+        <div class="flyword">御风飞行中...</div>
+    </div>
+
+    <script>
+        $("#fog_go").click(function(){fog_go()});
+        async function fog_go(){
+            $(".bars").hide()
+            $("#live2d").hide()
+            await sleep(3000);
+            $(".flycontainer").css("display","flex");
+            $(".popup").fadeOut(500)
+            await sleep(2000);
+            var sitename = "tongyao&#39;s blog";
+            getFogUser(sitename);
+        }
+
+        function fog_goregis(){
+            var sitename = "tongyao&#39;s blog";
+            var siteurl = "https://xuetongyao.github.io";
+            regisFogUser(sitename,siteurl);
+        }
+        fog_goregis();
+    </script> -->
+<!------------- Fog1.0版本彩蛋👆 -------------->
+<script>
+    function change_topmenu(){
+        tmcolor = "antiquewhite"
+        tsnamecolor = "antiquewhite"
+        $(".navbar-inverse .navbar-nav>li>a").css("color",tmcolor)
+        $(".navbar-inverse .navbar-brand").css("color",tsnamecolor)
+        $(".navbar-fixed-top").css("border-radius","0 0 10px 10px")
+    }
+</script>
+
+<!------ 根据自定义配置声明变量👇 --------------------->
+    
+    <script>
+        var postnumChoice = false
+    </script>
+    
+    
+    <script>
+        var shareChoice = true
+    </script>
+    
+    
+    <script>
+        var donateChoice = false
+    </script>
+    
+    
+    <script>
+        var searchChoice = true
+    </script>
+    
+    <script>let postsnum = 0;</script>
+    <div id="side-posttitle" style="display: none;">
+    
+    
+    OpenFegin 进行远程服务调用
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    HashMap
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Mapreduce
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    JVM
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    Big Data
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    Hello Gridea
+    <script>
+        postsnum += 1
+    </script>
+    
+    
+    </div>
+    
+        <script>
+            var menupos = 'left';
+            $("#siteinfo-postsnum").html(postsnum);
+        </script>
+    
+    <script>
+        let commentsHide = false
+    </script>
+    <!------ 根据自定义配置声明变量👆 --------------------->
+
+
+    <!----------根据自定义配置设置图标信息👇---------->
+    <script>
+        var icondict = new Array();
+    </script>
+    
+        
+    
+    <!----------根据自定义配置设置图标信息👆---------->
+</body>
+
+<script src="https://xuetongyao.github.io/media/share/dist/Share.js"></script>
+<!-- 页面pjax测试 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js"></script>
+<!--确保jQuery已经在此之前加载-->
+<!-- <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script> -->
+<script src="https://xuetongyao.github.io/media/js/all-pjax.js"></script>
+<script>
+    //-------------------------------说说功能👇--------------------------------------
+    let talksall = [];
+    let talks = [];
+    let talkindex = 0;
+    get();
+
+    function get() {
+        var t = JSON.parse('[]');
+        talkindex = t.length - 1;
+        for (var i = 0; i <= t.length - 1; i++) {
+            var d = {};
+            d["time"] = t[i].time;
+            d["author"] = t[i].author;
+            d["text"] = t[i].text;
+            d["img"] = t[i].img;
+            talksall.push(d);
+        }
+    }
+
+    function add() {
+        for (var i = talkindex; i >= 0 && i > talkindex - 3; i--) {
+            talks.push(talksall[i]);
+        }
+        talkindex = (talkindex - 3) >= 0 ? (talkindex - 3) : -1;
+        if (talkindex < 0) $("#getmorebt").hide();
+        show();
+    }
+
+    function show() {
+        var talkT = document.getElementById("talkContainer");
+        talkT.innerHTML = "";
+        for (var i = 0; i < talks.length; i++) {
+            if (talks[i].img != '') {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <span data-fancybox="images" href="' + talks[i].img + '"><img src="' + talks[i].img + '" class="talkimg"></span> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            } else {
+                talkT.innerHTML += '\
+            <div class="talk" v-for="t in talks"> \
+                <div class="ainfo">\
+                    <div class="ainfo-intro">\
+                        <div class="author">' + talks[i].author + '</div>·\
+                        <div class="time">' + talks[i].time + '</div>\
+                    </div>\
+                </div>\
+                <div class="talkcontent">' + talks[i].text + '\
+                </div\>\
+            ';
+            }
+        }
+    }
+    //-------------------------------说说功能👆--------------------------------------
+</script>
+
+<!---->
+<script>
+    function replaceAvatar() {
+        twikoo_avatar = $(".tk-avatar-img");
+        for (var i = 0; i < twikoo_avatar.length; i++) {
+            var asrc = twikoo_avatar.eq(i).attr('src');
+            if (asrc.search('cn.gravatar.com') != -1) {
+                twikoo_avatar.eq(i).attr('src', 'https://xuetongyao.github.io/media/images/comavatar.png');
+            }
+        }
+    }
+
+    function showWechat() {
+        var wechat = 'XueTongyao_';
+        alert("博主微信号：" + wechat);
+        return false;
+    }
+</script>
+
+<script>
+    /**
+     * https://github.com/tangkaichuan/gridea-search
+     */
+    // 检查缓存是否最新
+    function checkCache() {
+        var caches_postsnum = localStorage.getItem("postsnum");
+        var pt = document.getElementById("side-posttitle").innerHTML;
+        pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "")
+        var ptlen = pt.length;
+        var ptlen_storage = localStorage.getItem("poststitlelen");
+        if (caches_postsnum != postsnum || ptlen != ptlen_storage) {
+            console.log("更新缓存");
+            return false
+        }
+        return true;
+    }
+
+    (function () {
+        var CACHES = checkCache()
+        if (!CACHES) {
+            var NOW = Date.now()
+            var API_CONTENT = '../api-content/index.html' + '?_=' + NOW
+            preload(API_CONTENT);
+            getContents(show_getContentresult);
+        }
+
+        function show_getContentresult(data) {
+            console.log("获取成功");
+            var postslen = data["posts"].length;
+            localStorage.setItem('postsnum', postslen);
+            var poststitlelen = 0;
+            var pt = document.getElementById("side-posttitle").innerHTML;
+            pt = pt.replace(/\s+/g, '').replace(/<script>.*?<\/script>/gi, "");
+            localStorage.setItem('poststitlelen', pt.length);
+        }
+
+
+
+        // preload
+        function preload(url) {
+            var preloadLink = document.createElement('link')
+            preloadLink.href = url
+            preloadLink.rel = 'preload'
+            preloadLink.as = 'fetch'
+            preloadLink.crossOrigin = 'anonymous'
+            document.head.appendChild(preloadLink)
+        }
+
+        // 异步 GET 请求
+        function get(obj) {
+            var xhr = new XMLHttpRequest()
+            xhr.open('get', obj.url, true)
+            xhr.send(null)
+            xhr.onreadystatechange = function () {
+                // 异步请求：响应状态为4，数据加载完毕
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        obj.success(xhr.responseText)
+                    } else {
+                        obj.error(xhr.status)
+                    }
+                }
+            }
+        }
+
+        // 获取博客全文 api
+        function getContents(callback) {
+            if (CACHES) {
+                callback(CACHES.contents)
+            } else {
+                get({
+                    url: API_CONTENT,
+                    success: function (data) {
+                        callback(JSON.parse(data));
+                        localStorage.setItem('ContentsCache', data);
+                        getStorageContent();
+                    }
+                })
+            }
+        }
+    })()
+    //------------------------核心功能--pjax全局渲染👇-------------------
+    let talkinit = false;
+    $(document).pjax('a[data-pjax]', '#main', {
+        fragment: '#main',
+        timeout: 8000
+    }).on('pjax:complete', function () {
+        //代码块高亮渲染
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+        //文章热度
+        if(postnumChoice){
+            getHotnum();
+        }
+        //文章索引
+        toginit();
+        //清空搜索栏
+        if (searchChoice) {
+            searchInit();
+            searchInput.value = "";
+        }
+        var pl = window.location.pathname;
+        //说说更新
+        if (pl.search("talk") != -1 && !talkinit) {
+            add();
+            talkinit = true;
+        } else if (pl.search("talk") != -1) {
+            show();
+        }
+        if (pl.search("post") != -1) {
+            if (shareChoice)
+                shareInit();
+            if (donateChoice)
+                donateInit();
+            if ("default" == "default"&&!commentsHide) {
+                $("#comment").hide()
+                commentsHide = true
+            }
+            lazyload();
+            codeinit();
+            if ("default" == "twikoo") {
+                //twikoo头像更换
+                setTimeout(replaceAvatar, 3000);
+                setTimeout(replaceAvatar, 8000); //部分博主站点速度加载过慢，再添加一个延迟
+            }
+        }
+        if (btstate == true)
+            dropdown();
+    }).on('pjax:start', function () {
+        $(".pjaxloading").fadeIn(50);
+    }).on('pjax:end', function () {
+        $(".pjaxloading").fadeOut(50);
+    });
+    //------------------------核心功能--pjax全局渲染👆-------------------
+
+    //-------------------------------------------------搜索
+    // 获取搜索框、搜索按钮、清空搜索、结果输出对应的元素
+    if (searchChoice) {
+        var searchInput = document.querySelector('.search-input');
+        var searchResults = document.querySelector('.search-results');
+    }
+    // 申明保存文章的标题、链接、内容的数组变量
+    var searchValue = '',
+        arrItems = [],
+        arrLinks = [],
+        arrTitles = [],
+        arrContents = [],
+        arrResults = [],
+        indexItem = [],
+        itemLength = 0;
+    var tmpDiv = document.createElement('div');
+    tmpDiv.className = 'result-item';
+
+
+    function getStorageContent() {
+        var data = localStorage.getItem('ContentsCache');
+        data = JSON.parse(data);
+        posts = data["posts"];
+        for (var i = 0; i < posts.length; i++) {
+            arrLinks[i] = posts[i].link;
+            arrTitles[i] = posts[i].title;
+            arrContents[i] = posts[i].content;
+            itemLength++;
+        }
+    }
+    if (checkCache())
+        getStorageContent();
+    // 输入框内容变化后就开始匹配，可以不用点按钮
+    // 经测试，onkeydown, onchange 等方法效果不太理想，
+    // 存在输入延迟等问题，最后发现触发 input 事件最理想，
+    // 并且可以处理中文输入法拼写的变化
+    searchInput.oninput = function () {
+        setTimeout(searchConfirm, 0);
+    }
+    searchInput.onfocus = function () {
+        searchResults.style.display = 'block';
+    }
+
+    function searchConfirm() {
+        if (searchInput.value == '') {
+            searchResults.style.display = 'none';
+        } else if (searchInput.value.search(/^\s+$/) >= 0) {
+            // 检测输入值全是空白的情况
+            searchInit();
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '请输入有效内容...';
+            searchResults.appendChild(itemDiv);
+        } else {
+            // 合法输入值的情况
+            searchInit();
+            searchValue = searchInput.value;
+            // 在标题、内容中查找
+            searchMatching(arrTitles, arrContents, searchValue);
+        }
+    }
+
+    // 每次搜索完成后的初始化
+    function searchInit() {
+        arrResults = [];
+        indexItem = [];
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'block';
+    }
+
+    function searchMatching(arr1, arr2, input) {
+        // 忽略输入大小写
+        input = new RegExp(input, 'i');
+        var step = 10;
+        // 在所有文章标题、内容中匹配查询值
+        for (i = 0; i < itemLength; i++) {
+            var indexContent = arr2[i].search(input);
+            //标题匹配
+            if (arr1[i].search(input) != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+                if (indexContent != -1) {
+                    startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                    var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                    arrResults.push("....." + searchcontent + ".....");
+                } else
+                    arrResults.push("");
+            }
+            //内容匹配
+            else if (indexContent != -1) {
+                indexItem.push(i); // 保存匹配值的索引
+
+                startindex = (indexContent - step) >= 0 ? (indexContent - step) : 0;
+                var searchcontent = arr2[i].slice(indexContent - step, indexContent + 5)
+                arrResults.push("....." + searchcontent + ".....");
+            }
+        }
+
+        // 输出总共匹配到的数目
+        var totalDiv = tmpDiv.cloneNode(true);
+        totalDiv.innerHTML = '<b>总匹配：' + indexItem.length + ' 项<hr></b>';
+        searchResults.appendChild(totalDiv);
+
+        // 未匹配到内容的情况
+        if (indexItem.length == 0) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '未匹配到内容...';
+            searchResults.appendChild(itemDiv);
+        }
+
+        // 将所有匹配内容进行组合
+        for (i = 0; i < arrResults.length; i++) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerHTML = '<a data-pjax class="searchresults" href="' + arrLinks[indexItem[i]] + '"><b>[' +
+                arrTitles[indexItem[i]] +
+                ']</b><p>' + arrResults[i] + '</p></a><hr />';
+            searchResults.appendChild(itemDiv);
+        }
+    }
+</script>
+
+
+
+<!--------------------- 菜单栏图标加载功能👇 ----------------------->
+<script>
+var menulist = $(".menuicon");
+var menulength = menulist.length;
+for (var i = 0; i < menulength; i++) {
+    var altname = menulist.eq(i).attr("alt");
+    var iconurl = icondict[altname];
+    if (iconurl == undefined || iconurl == '')
+        continue;
+    if (iconurl == 'Home') {
+        menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Home.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Archive') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Archive.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Tag') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Tag.png");
+menulist.eq(i).show();
+} else if (iconurl == 'About') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/About.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Talk') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Talk.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Friends') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/Friends.png");
+menulist.eq(i).show();
+} else if (iconurl == 'Fly') {
+menulist.eq(i).attr("src", "https://xuetongyao.github.io/media/images/wind.png");
+menulist.eq(i).show();
+} else {
+menulist.eq(i).attr("src", iconurl);
+menulist.eq(i).show();
+}
+}
+</script>
+<!--------------------- 菜单栏图标加载功能👆 ----------------------->
+
+<script>
+    //--------------------bber-onetalk加载👇--------------------------------
+    function bberonetalkLoad(){
+        bberjsonurl = '';
+        if ( $("#bber-talk").length > 0 ) {
+        jsonUrl = bberjsonurl
+        $.getJSON(jsonUrl+"?t="+Date.parse( new Date()),function(res){
+        var bberHtml = ''
+        $.each(res.data, function(i, item){
+            d = new Date(item.date)
+            date = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate() +' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+            dataTime = '<span class="datatime">'+date+'</span>'
+            bberHtml += '<li class="item item-'+(i+1)+'">'+dataTime+'： <a data-pjax href="https://xuetongyao.github.io/bber">'+item.content+'</a></li>'
+        });
+        $('#bber-talk').append('<span class="index-talk-icon"><svg viewBox="0 0 1024 1024" width="21" height="21"><path d="M184.32 891.667692c-12.603077 0-25.206154-2.363077-37.809231-7.876923-37.021538-14.966154-59.864615-49.624615-59.864615-89.009231v-275.692307c0-212.676923 173.292308-385.969231 385.969231-385.969231h78.76923c212.676923 0 385.969231 173.292308 385.969231 385.969231 0 169.353846-137.846154 307.2-307.2 307.2H289.083077l-37.021539 37.021538c-18.904615 18.116923-43.323077 28.356923-67.741538 28.356923zM472.615385 195.347692c-178.018462 0-322.953846 144.935385-322.953847 322.953846v275.692308c0 21.267692 15.753846 29.144615 20.48 31.507692 4.726154 2.363077 22.055385 7.876923 37.021539-7.08923l46.473846-46.473846c6.301538-6.301538 14.178462-9.452308 22.055385-9.452308h354.461538c134.695385 0 244.184615-109.489231 244.184616-244.184616 0-178.018462-144.935385-322.953846-322.953847-322.953846H472.615385z"></path><path d="M321.378462 512m-59.076924 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M518.301538 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153847 0 59.076923 59.076923 0 1 0-118.153847 0Z"></path><path d="M715.224615 512m-59.076923 0a59.076923 59.076923 0 1 0 118.153846 0 59.076923 59.076923 0 1 0-118.153846 0Z"></path></svg></span><ul class="talk-list">'+bberHtml+'</ul>')
+        //Lately({ 'target': '#bber-talk .datatime' });
+        });
+        function Roll (){
+        var list_li = $('.talk-list li'),cur_li = list_li.first(),last_li = list_li.last();
+        last_li.after(cur_li);
+        };
+        setInterval(Roll,3000);
+    }
+    }
+  //--------------------bber-onetalk加载👆--------------------------------
+</script>
+
+<script>
+    var ClicksideState = 1
+    var cur_readingmode = false
+    function readingmode(){
+        if (!cur_readingmode){
+            if(menupos == 'left'){
+                if(ClicksideState==1)
+                menu_openclose1()
+            }
+            $("#tab1").fadeOut(50)
+            $("#bg").fadeOut(50)
+            $(".navbar").fadeOut(50)
+            $(".markdownIt-TOC li a").css("color","black")
+            cur_readingmode = true
+        }else{
+            if(menupos == 'left'){
+                if(ClicksideState==0)
+                    menu_openclose1()
+            }
+            $("#tab1").fadeIn(50)
+            $("#bg").fadeIn(50)
+            $(".navbar").fadeIn(50)
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            cur_readingmode = false  
+        }
+    }
+</script>
+
+
+<!----夜间模式👇-->
+<script>
+    var moonlightState = false
+    function moonlight(){
+        if(!moonlightState){
+            $("#bg").fadeOut(200)
+            $('body').css("background","rgba(0,0,0,0.8)")
+            $(".markdownIt-TOC li a").css("color","white")
+            $(".text p, .text ul").css("color","white")
+            $("#articlecontent").css("color","white")
+            $(".post-copyright").css("background","rgba(10,10,10,0.5)")
+            $('blockquote').css("background","rgba(10,10,10,0.6)")
+            $("#articlecontent").css("background","rgba(10,10,10,0.5)")
+            moonlightState = true
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/sun.png")
+        }else{
+            $("#bg").show()
+            $(".markdownIt-TOC li a").css("color","antiquewhite")
+            $(".text p, .text ul").css("color","rgba(0, 0, 0, 0.7)")
+            $("#articlecontent").css("color","black")
+            $(".post-copyright").css("background","#f9f9f9")
+            $('blockquote').css("background","#eff8f0")
+            $("#articlecontent").css("background","white")
+            $(".moon").attr("src","https://xuetongyao.github.io/media/images/moon.png")
+            $('body').css("background","white")
+            moonlightState = false
+        }
+    }
+</script>
+<!----夜间模式👆--></div>
+                <!--------------- pc端菜单栏👆 ---------------->
+                <div id="tab1" class="tab">
+                    <div class="bars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="close"></div>
+                </div>
+                <div class="col-md-1 col-lg-3"></div>
+                <!----------- 移动端导航栏👇 ----------------->
+                <div class="mobilebar"><style>
+  .navmobile {
+    z-index: 15;
+    max-height: 40vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .navbar {
+      max-width: 100vw;
+    }
+  }
+
+  @media screen and (max-width:1200px) and (min-width: 768px) {
+    @media (min-width: 768px) {
+      .navbar-nav {
+        float: right;
+        margin: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width:768px) {
+    .mbapspan {
+      padding: 0;
+    }
+  }
+</style>
+<div class="pjaxloading"  onclick="pjaxloadingClose()">
+  <div class="loadingbackground"></div>
+  <div id="loading">
+    <div class="loading">
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-inverse navbar-fixed-top navmobile">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#barmenu"
+        aria-expanded="false" id="barbutton">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a data-pjax class="navbar-brand" style="color:white" href="https://xuetongyao.github.io">tongyao&#39;s blog&nbsp;&nbsp;|</a>
+      <span class="navbar-brand mbapspan"><i id="mbaplayer" class="fa fa-play-circle-o" aria-hidden="true"
+          style="font-size: 28px;top: 12px;position: absolute;" onclick="aplayerPlay();"></i></span>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="barmenu">
+      <ul class="nav navbar-nav">
+        
+        
+        <li>
+          <a data-pjax href="/" style="color:white">
+            首页
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/archives" style="color:white">
+            归档
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/tags" style="color:white">
+            标签
+          </a>
+        </li>
+        
+        
+        
+        <li>
+          <a data-pjax href="/post/about" style="color:white">
+            关于
+          </a>
+        </li>
+        
+        
+        
+        
+          
+        <li><a data-pjax href="https://xuetongyao.github.io/friends" style="color:white">友链</a></li>
+
+        
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+  <!-- 引入jQuery核心js文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+  <script>
+    let btstate = false;
+    var bt = $("#barbutton");
+    var bm = $("#barmenu");
+    bt.click(function () {
+      dropdown();
+    })
+    function dropdown() {
+      console.log(btstate);
+      //下拉
+      if (btstate == false) {
+        bt.removeClass("collapsed");
+        bt.attr("aria-expanded", "true");
+        bm.attr("aria-expanded", "true")
+        bm.fadeIn(700);
+        btstate = true;
+      }
+      else {
+        bt.addClass("collapsed");
+        bt.attr("aria-expanded", "false");
+        bm.removeClass("in");
+        bm.hide();
+        bm.attr("aria-expanded", "false");
+        btstate = false;
+      }
+    }
+  </script> 
+                <!----------- 移动端导航栏👆 ----------------->
+                </div>
+                <div id="main" class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
+                    <!-- 移动端 -->
+                    <div class="mobilebar">
+                        <!-- 移动端欢迎页 -->
+<div class="welcome">
+    <div class="avatar-border">
+        <img src="https://xuetongyao.github.io/images/avatar.png?v=1659154940236" class="avatar">
+    </div>
+    <span class="mobiledescribtion"></span>
+</div>
+
+
+    <div id="mobilebgurl" style="display:none">https://xuetongyao-1309021253.cos.ap-shanghai.myqcloud.com/img/Thinkpad/custom-mobilebgimage.jpg</div>
+
+<script>
+    var welcome = $('.welcome');
+    var bgurl = document.getElementById("mobilebgurl").innerHTML;
+    for (var i = 0; i < 3; i++)
+        bgurl = bgurl.replace("\\", "/");
+    welcome.css("background", "url('" + bgurl + "')");
+    var mobiledes = document.querySelector(".mobiledescribtion");
+    var text = "距离之所以可怕，因为根本不知道对方是把你想念，还是把你忘记";
+    // 当前显示第几个字
+    var mobilecharIndex = 1;
+    // 每个字显示间隔默认是500毫秒
+    var mobiledelta = 500;
+
+    // 记录动画执行开始时间
+    var mobilestart = null;
+    // 是否为删除动画
+    var mobileisDeleting = false;
+
+    // 动画回调函数
+    function mobileLoadDes(time) {
+        window.requestAnimationFrame(mobileLoadDes);
+        // 初始化开始时间
+        if (!mobilestart) start = time;
+        // 获取时间间隔
+        var mobileprogress = time - mobilestart;
+        // 每隔一定的时间，打印出一个新的字符
+        if (mobileprogress > mobiledelta) {
+            // 如果是打字效果
+            if (!mobileisDeleting) {
+                // 给展示文字的span新增一个字符，使用innerHTML来替换，charIndex自增1，然后返回新的字符串子串
+                mobiledes.innerHTML = "&nbsp;" + text.slice(
+                    0,
+                    ++mobilecharIndex
+                );
+                mobiledelta = 500 - Math.random() * 400;
+            } else {
+                // 如果是删除效果，则把文字一个一个减掉
+                mobiledes.innerHTML = "&nbsp;" + text.slice(
+                    0,
+                    mobilecharIndex--
+                );
+            }
+            // 把star更新为当前时间，进行下一个周期
+            mobilestart = time;
+
+            // 如果文字已经全部打印完毕
+            if (mobilecharIndex === text.length) {
+                // 下次开始删除文字
+                mobileisDeleting = true;
+                // 删除文字的间隔为200毫秒
+                mobiledelta = 100;
+                // 额外等待1.2秒后再删除
+                mobilestart = time + 1000;
+            }
+
+            // 如果文字删除完毕
+            if (mobilecharIndex < 0) {
+                mobileisDeleting = false;
+                // 额外增加200毫秒延迟
+                mobilestart = time + 200;
+            }
+        }
+    }
+
+    window.requestAnimationFrame(mobileLoadDes);
+</script>
+                        <img src="" alt="" class="plbg">
+<script>
+    var bgchoice = "link";
+    if(bgchoice=='default')
+        var plbgurl = "/media/images/custom-mobilebg.jpg"
+    else  
+        var plbgurl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUyGl4FHNpVjeTeKracxQDllffgL0zyiRMVA&amp;usqp=CAU"
+    $(".plbg").attr("src",plbgurl);
+    $(".plbg").fadeIn(200);
+</script>
+                    </div>
+                    <div style="display:none">
+</div>
+                    <link rel="stylesheet" href="https://xuetongyao.github.io/media/css/font-awesome.css">
+
+
+    <div style="display: none;">
+        
+            
+                <span name="plfeature">data:image/jpeg;base64,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</span>
+                
+            <span name="pltitle">Big Data</span>
+            <span name="pllink">https://xuetongyao.github.io/post/big-data/</span>
+            <span name="pldate">2022-07-27</span>
+            <span name="plstats">28 min read</span>
+            
+                <span name="pltag" alt="Big Data">Big Data</span>
+                <span name="pltaglink" alt="Big Data">https://xuetongyao.github.io/tag/F9rBBNUVn/</span>
+            
+        
+            
+                <span name="plfeature">data:image/png;base64,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</span>
+                
+            <span name="pltitle">OpenFegin 进行远程服务调用</span>
+            <span name="pllink">https://xuetongyao.github.io/post/mgAe6A0Cx/</span>
+            <span name="pldate">2022-07-30</span>
+            <span name="plstats">7 min read</span>
+            
+                <span name="pltag" alt="OpenFegin 进行远程服务调用">Feign</span>
+                <span name="pltaglink" alt="OpenFegin 进行远程服务调用">https://xuetongyao.github.io/tag/xdrFtMlgX/</span>
+            
+                <span name="pltag" alt="OpenFegin 进行远程服务调用">服务端</span>
+                <span name="pltaglink" alt="OpenFegin 进行远程服务调用">https://xuetongyao.github.io/tag/pE5XzaxRVm/</span>
+            
+                <span name="pltag" alt="OpenFegin 进行远程服务调用">Spring Cloud</span>
+                <span name="pltaglink" alt="OpenFegin 进行远程服务调用">https://xuetongyao.github.io/tag/ZmciMg3uvm/</span>
+            
+        
+            
+                <span name="plfeature">https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5-Q0QJB5L7d_ZNDC-wGMWAqSy0Sn0Z4i0dQ&amp;usqp=CAU</span>
+                
+            <span name="pltitle">HashMap</span>
+            <span name="pllink">https://xuetongyao.github.io/post/hashmap/</span>
+            <span name="pldate">2022-07-27</span>
+            <span name="plstats">20 min read</span>
+            
+                <span name="pltag" alt="HashMap">Hash</span>
+                <span name="pltaglink" alt="HashMap">https://xuetongyao.github.io/tag/4AubVT6pd/</span>
+            
+                <span name="pltag" alt="HashMap">Java</span>
+                <span name="pltaglink" alt="HashMap">https://xuetongyao.github.io/tag/tYG_5sVbYP/</span>
+            
+        
+            
+                <span name="plfeature">https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtxMkctjiF3ozA6BpDpv-4xZdXjs56fl9vg&amp;usqp=CAU</span>
+                
+            <span name="pltitle">Mapreduce</span>
+            <span name="pllink">https://xuetongyao.github.io/post/mapreduce/</span>
+            <span name="pldate">2022-07-27</span>
+            <span name="plstats">10 min read</span>
+            
+                <span name="pltag" alt="Mapreduce">mapreduce</span>
+                <span name="pltaglink" alt="Mapreduce">https://xuetongyao.github.io/tag/K0myc6mSB/</span>
+            
+                <span name="pltag" alt="Mapreduce">Big Data</span>
+                <span name="pltaglink" alt="Mapreduce">https://xuetongyao.github.io/tag/F9rBBNUVn/</span>
+            
+        
+    </div>
+
+    
+    <div id="post-container" class="eleg-allpostscontainer">
+        <div v-for="post in postinfo" class="eleg-posts">
+            <div v-if="post.elegcontainer=='eleg-postcontainer-left'">
+                    <div :class="post.elegcontainer">
+                        <img :src="post.feature" alt="" :class="post.imgclass">
+                        
+                        <img class="eleg-swordsmen-left" src="https://xuetongyao.github.io/media/images/swordsmenleft.webp" alt="">
+                        
+                        <div class="eleg-info">
+                            <span class="eleg-title">{{post.title}}</span>
+                            <div style="margin-top:15px;">
+                                <span class="postdate eleg-date"><i class="fa fa-calendar"></i>{{post.date}}</span>
+                                <span class="poststatus postdate eleg-stats"><i class="fa fa-clock-o"></i> {{post.stats}}</span>
+                            </div>
+                            <div style="margin-top:50px">
+                                <a :href="post.link" class="eleg-btn" data-pjax>阅读全文</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='eleg-tags'>
+                        <div v-for="(tag,i) in post.tags">
+                            <div class="posttag">
+                                <a data-pjax :href="post.taglink[i]" class="postlink eleg-postlink">
+                                    <i class="fa fa-tag"></i>{{tag}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div v-else>
+                    <div :class="post.elegcontainer">
+                        <div class="eleg-info">
+                            <span class="eleg-title">{{post.title}}</span>
+                            <div style="margin-top:15px;">
+                                <span class="postdate eleg-date"><i class="fa fa-calendar"></i>{{post.date}}</span>
+                                <span class="poststatus postdate eleg-stats"><i class="fa fa-clock-o"></i> {{post.stats}}</span>
+                            </div>
+                            <div style="margin-top:50px">
+                                <a :href="post.link" class="eleg-btn" data-pjax>阅读全文</a>
+                            </div>
+                        </div>
+                        
+                        <img class="eleg-swordsmen" src="https://xuetongyao.github.io/media/images/swordsmen.webp" alt="">
+                        
+                        <img :src="post.feature" alt="" :class="post.imgclass">
+                    </div>
+                    <div class='eleg-tags'>
+                        <div v-for="(tag,i) in post.tags">
+                            <div class="posttag">
+                                <a data-pjax :href="post.taglink[i]" class="postlink eleg-postlink">
+                                    <i class="fa fa-tag"></i>{{tag}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+    var app2 = new Vue({
+      el: '#post-container',
+      mounted:function(){
+        this.getpostInfo();
+      },
+      methods:{
+         getpostInfo:function(){
+             var plflist = $("span[name='plfeature']");
+             var pltlist = $("span[name='pltitle']");
+             var plllist = $("span[name='pllink']");
+             var pldlist = $("span[name='pldate']");
+             var plslist = $("span[name='plstats']");
+             var pltaglist = $("span[name='pltag']");
+             var pltaglinklist = $("span[name='pltaglink']")
+             for(var i=0;i<this.pagesize&&i<plflist.length;i++){
+                 var d = {};
+                 var tags = []
+                 var taglink = []
+                 d["feature"] = plflist.eq(i).html();
+                 d["title"] = pltlist.eq(i).html();
+                 d["link"] = plllist.eq(i).html();
+                 d["date"] = pldlist.eq(i).html();
+                 d['stats'] = plslist.eq(i).html();
+                 for(var j=0;j<pltaglist.length;j++){
+                     if(pltaglist.eq(j).attr('alt')==d['title'])
+                        tags.push(pltaglist.eq(j).html())
+                 }
+                 d["tags"] = tags;
+                 for(var j=0;j<pltaglinklist.length;j++){
+                    if(pltaglinklist.eq(j).attr('alt')==d['title'])
+                        taglink.push(pltaglinklist.eq(j).html())
+                 }
+                 d["taglink"] = taglink
+                 if(i%2==0)
+                 {
+                     d['elegcontainer'] = 'eleg-postcontainer-left';
+                     d['imgclass'] = 'eleg-img-left'
+                 }
+                 else{
+                    d['elegcontainer'] = 'eleg-postcontainer-right';
+                    d['imgclass'] = 'eleg-img-right' 
+                 }
+                 this.postinfo.push(d);
+             }
+         }
+      },
+      data: {
+        pagesize: "4",
+        postinfo:[],
+      }
+    })
+    </script>
+
+
+                    <div>
+                        <div class="pcpagi">
+    <div class="pagi">
+        <ul>
+            
+            <li><a style="width:100px">&nbsp;</a></li>
+            
+                    <li><a id="page1">1</a></li>
+                    <li><a id="page2" class="active">2</a></li>
+                    <li><a id="page3">3</a></li>
+                    
+            <li><a data-pjax href="https://xuetongyao.github.io/page/2" style="width:100px" id="next">下一页</a></li>
+            
+                </ul>
+    </div>
+</div>
+
+<div id="pagination-prev" style="display:none"> 
+</div>
+<div id="pagination-next" style="display:none"> https://xuetongyao.github.io/page/2</div>
+
+<div class="pagination-container">
+    
+    <a href="#" class="mobile-prevpage"></a>
+      
+    
+    <a data-pjax href="https://xuetongyao.github.io/page/2" class="mobile-nextpage">下一页</a>
+    
+</div>
+
+<script>
+    var prevstr = document.getElementById("pagination-prev").innerHTML;
+    var nextstr = document.getElementById("pagination-next").innerHTML;
+    var page1 = document.getElementById("page1");
+    var page2 = document.getElementById("page2");
+    var page3 = document.getElementById("page3");
+    page1.innerHTML = '-';
+    page2.innerHTML = '1';
+    page3.innerHTML = '-';
+    if (prevstr.length > 5) {
+        if (prevstr.indexOf("page/") != -1) {
+            var prevnum = parseInt(prevstr.split("page/")[1]);
+            page1.innerHTML = prevnum;
+            page2.innerHTML = prevnum + 1;
+        } else {
+            page1.innerHTML = 1;
+            page2.innerHTML = 2;
+        }
+    }
+    if (nextstr.indexOf("page/") != -1) {
+        var nextnum = parseInt(nextstr.split("page/")[1]);
+        page3.innerHTML = nextnum;
+        page2.innerHTML = nextnum - 1;
+    }
+</script>
+                    </div>
+                </div>
+                <div class="col-md-1 col-lg-2"></div>
+                
+                <!-- ----------------左侧菜单栏html 👆-------------------------------------->
+                <!------------------ 顶部菜单栏html👇--------->
+                 
+                <!------------------ 顶部菜单栏html👆--------->
+                </div>
+            </div>
+            <div id="bg">
+            </div>
+            <!------- 背景图加载方式👇----- -->
+            <div id="bgchoice" style="display: none">link
+            </div>
+            
+            <div id="bgurl" style="display:none">https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUyGl4FHNpVjeTeKracxQDllffgL0zyiRMVA&amp;usqp=CAU</div>
+            
+            <!------- 背景图加载方式👆----- --> 
+        <div id="landlord">
+            <div class="message" style="opacity:0"></div>
+            <canvas id="live2d" width="240" height="250" class="live2d"></canvas>
+        </div>
+    </div>
+        
+            <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+</head>
+
+<body>
+    <div class="miniMode">
+        <meting-js id="myaplayer" server="netease" type="playlist" fixed="true" order="default" muted="muted">
+        </meting-js>
+    </div>
+</body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script>
+    function aplayerInit() {
+        var aplayerid = "228374769";
+        var aplayerserver = "netease";
+        var aplayerorder = "random";
+        var aplayerautoplay = "true";
+        var aplayer = $("#myaplayer");
+        aplayer.attr("server", aplayerserver);
+        aplayer.attr("id", aplayerid);
+        aplayer.attr("order", aplayerorder);
+        if (aplayerautoplay == "true")
+            aplayer.attr("autoplay", "true");
+    }
+    aplayerInit();
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/850552586/ericamcdn@0.1/js/Aplayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+<script>
+    function aplayerbtnInit() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        if(player==undefined)return false;
+        player.lrc.hide();
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == false) {
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+
+    function aplayerPlay() {
+        var player = document.querySelectorAll('meting-js')[0].aplayer;
+        var mbabtn = $("#mbaplayer");
+        if (player.paused == true) {
+            player.play();
+            mbabtn.removeClass("fa-play-circle-o");
+            mbabtn.addClass("fa-pause-circle");
+        } else {
+            player.pause();
+            mbabtn.addClass("fa-play-circle-o");
+            mbabtn.removeClass("fa-pause-circle");
+        }
+    }
+</script>
+        
+    <div id="domainname" style="display:none">https://xuetongyao.github.io
+        </div>
+
+<!-------------------- live2d功能👇 --------------------------->
+    
+<!-------------------- live2d功能👆 --------------------------->
+
+<!------------ 加载全局背景图功能👇（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+<script>
+    var bgchoice = "link"
+    var bg = $('#bg');
+    var bgurl = document.getElementById("bgurl").innerHTML;
+    if (bgchoice == 'default')
+    {
+        for (var i = 0; i < 3; i++)
+            bgurl = bgurl.replace("\\", "/");
+        bgurl = "https://xuetongyao.github.io/" + bgurl;
+    }
+    bg.css("background", "url('" + bgurl + "')");
+
+    window.onload = function () {
+        aplayerbtnInit();
+    }
+</script>
+<!------------ 加载全局背景图功能👆（开始时没有写好，这功能有点鸡肋/(ㄒoㄒ)/~~） -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+        <script src="https://xuetongyao.github.io/media/js/index.js"></script>
+        
+</body>
+</html>
